@@ -7,36 +7,23 @@
     </div>
 </div> *@
 
-<nav class="navbar" @onclick="ToggleNavMenu">
-    <div class="nav-item">
-        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-            <span class="oi oi-dark oi-home" aria-hidden="true"></span> Home
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="Build">
-            <span class="oi oi-plus" aria-hidden="true"></span> BuildYourOwnToy
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="/Products">
-            <span class="oi oi-plus" aria-hidden="true"></span> Products
-        </NavLink>
-    </div>
+@* <nav class="navbar" @onclick="ToggleNavMenu"> *@
 
-    <div class="nav-item">
-         <NavLink class="nav-link" href="/identity/login">
-            <LoginControl />
-        </NavLink>
-      
-    </div>
+    <div class="btn-group-vertical">
+            <div class="nav-item justify-content-end">
+                <NavLink class="nav-link" href="/identity/login">
+                    <LoginControl />
+                </NavLink>
+            </div>
 
-    <div class="nav-item">
-        <NavLink class="nav-link" href="shoppingcart">
-            <span class="oi oi-cart" aria-hidden="true"></span> Shopping Cart
-        </NavLink>
+            <div class="nav-item justify-content-end">
+                <NavLink class="nav-link" href="shoppingcart">
+                    <span class="oi oi-cart" aria-hidden="true"></span> Shopping Cart
+                </NavLink>
+            </div>
     </div>
-</nav>
+   
+@* </nav> *@
 
 <style>
     .nav-item {

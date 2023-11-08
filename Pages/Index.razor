@@ -1,10 +1,14 @@
 ﻿@page "/"
+@inject NavigationManager navigationManager
 
 <PageTitle>Index</PageTitle>
 
-<h1>Toy Factory</h1>
+<button @onclick="@(()=>navigationManager.NavigateTo("https://www.youtube.com/watch?v=dQw4w9WgXcQ"))">Watch</button>
 
-<h3> Build your own toy!</h3>
+<button @onclick="@(() => navigationManager.NavigateTo("/build"))">Create</button>
+
+<button @onclick="@(() => navigationManager.NavigateTo("/shop"))">Shop</button>
+
 
 <div id="ExampleToys" class="carousel slide">
     <div class="carousel-inner"> 
