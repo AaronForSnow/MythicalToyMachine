@@ -1,0 +1,54 @@
+﻿@page "/shop"
+@using Microsoft.EntityFrameworkCore;
+@using MythicalToyMachine.Data;
+@inject IDbContextFactory<PostgresContext> dbcontext
+
+<h3>Products</h3>
+
+   @*  get the info for each product from the db *@
+    @if(Kits is not null)
+    {
+        <div class="Products d-flex flex-row">    
+        @foreach (var k in Kits)
+            {
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="\Images\KidWithToys.jpg">
+                    <div class="card-body">
+                        <h5 class="card-title">@(k.Kitname)</h5>
+                        <ul>
+                            @foreach(var a in k.KitAccessories)
+                        {
+                            <li>@(a.Acc?.Accessoryname)</li>
+                        }
+                    </ul>
+                        <a href="" class="btn btn-primary">Add To cart</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div>Loading...</div>
+    }
+
+@code {
+
+    Kit[]? Kits { get; set; }
+
+    bool? addedToCart { get; set; } = false; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = dbcontext.CreateDbContext();
+        Kits = await context.Kits
+                            .Include(k => k.KitAccessories)
+                            .ThenInclude(ka => ka.Acc)
+                            .ToArrayAsync();
+    }
+
+
+
+
+
+}
