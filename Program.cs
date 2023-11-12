@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MythicalToyMachine.Data;
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContextFactory<PostgresContext>();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
@@ -32,6 +34,7 @@ builder.Services.AddScoped<HttpContextAccessor>();
 // Required for HttpClient support in the Blanbl Client project
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();
+//builder.Services.AddScoped<IDbContextFactory>();
 
 var app = builder.Build();
 
