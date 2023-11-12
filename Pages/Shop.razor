@@ -14,7 +14,8 @@
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src="\Images\KidWithToys.jpg">
                     <div class="card-body">
-                        <h5 class="card-title">@(k.Kitname)</h5>
+                        <h5 class="card-title">@(k.Kitname) </h5>
+                    <h7 class="card-body">@(k.Creature?.Creaturename) base figure</h7>
                         <ul>
                             @foreach(var a in k.KitAccessories)
                         {
@@ -42,6 +43,7 @@
     {
         using var context = dbcontext.CreateDbContext();
         Kits = await context.Kits
+                            .Include(C => C.Creature)
                             .Include(k => k.KitAccessories)
                             .ThenInclude(ka => ka.Acc)
                             .ToArrayAsync();
