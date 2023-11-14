@@ -13,6 +13,8 @@ public partial class Kit
 
     public bool? Shoulddisplay { get; set; }
 
+    public string? ThumbnailPath { get; set; }
+
     public virtual Creature? Creature { get; set; }
 
     public virtual ICollection<KitAccessory> KitAccessories { get; set; } = new List<KitAccessory>();

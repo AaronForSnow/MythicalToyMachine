@@ -1,0 +1,45 @@
+﻿@page "/CreateKit"
+@inject ILogger<CreateKit> Logger
+@using Microsoft.EntityFrameworkCore;
+@using MythicalToyMachine.Data
+@inject IDbContextFactory<PostgresContext> dbcontext
+
+<EditForm Model="@Model" OnSubmit="@Submit">
+    <InputText @bind-Value="Model!.Kitname" />
+    <InputFile OnChange="@LoadPick"/>
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+    public Kit Model { get; set; } = new Kit();
+    private bool cannotSavePick = false;
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private void Submit()
+    {
+        Logger.LogInformation("Model.Id = {Id}", Model.Id);
+    }
+
+    private async Task LoadPick(InputFileChangeEventArgs e)
+    {
+        var filetype = e.GetType;
+        try{
+            if (Model.Kitname is null)
+            {
+                Model.Kitname = Model.Id.ToString();   
+            }
+            //Model.Kitname = Model.Kitname.Replace(" ", "");
+            var path = $"wwwroot/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
+            await using FileStream fs = new(path, FileMode.Create);
+            await e.File.OpenReadStream().CopyToAsync(fs); //maxfilesize
+
+        }
+        catch (Exception ex)
+        {
+            cannotSavePick = true;
+        }
+    }
+
+}

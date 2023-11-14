@@ -95,6 +95,7 @@ public partial class PostgresContext : DbContext
             entity.ToTable("kit", "toy");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ThumbnailPath).HasColumnName("thumbnail_path");
             entity.Property(e => e.CreatureId).HasColumnName("creature_id");
             entity.Property(e => e.Kitname)
                 .HasMaxLength(40)

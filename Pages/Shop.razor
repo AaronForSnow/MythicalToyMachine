@@ -12,7 +12,7 @@
         @foreach (var k in Kits)
             {
                 <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src="\Images\KidWithToys.jpg">
+                    <img class="card-img-top" src=@k.ThumbnailPath>
                     <div class="card-body">
                         <h5 class="card-title">@(k.Kitname) </h5>
                     <h7 class="card-body">@(k.Creature?.Creaturename) base figure</h7>
