@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MythicalToyMachine.Data;
 using System.Net.Http;
+using Blazorise;
+using Blazorise.Bootstrap;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +38,14 @@ builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();
 //builder.Services.AddScoped<IDbContextFactory>();
+
+builder.Services
+    .AddBlazorise(options =>
+    {
+        options.Immediate = true;
+
+    })
+    .AddBootstrapProviders();
 
 var app = builder.Build();
 
