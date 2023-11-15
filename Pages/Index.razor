@@ -1,40 +1,49 @@
 ﻿@page "/"
 @inject NavigationManager navigationManager
-
+@using Blazorise
 <PageTitle>Index</PageTitle>
 
-<Div Flex="Flex.JustifyContent.Around">
+<Row> 
+@* <Div Flex="Flex.JustifyContent.Around"> *@
+    <Column ColumnSize="ColumnSize.Is4">
     <Button @onclick="@(()=>navigationManager.NavigateTo("/watch"))" Style=@buttonWidth>
-        <Card Style=@buttonWidth>
+        <Card >
         <CardImage Source="/Images/YoutubeLogo.png"></CardImage>
             <CardBody>
-                <CardTitle Size="3">
+                    <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
                     Watch
                 </CardTitle>
             </CardBody>
         </Card>
     </Button>
-    <Button @onclick="@(() => navigationManager.NavigateTo("/build"))">
-        <Card Style=@buttonWidth>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+    <Button @onclick="@(() => navigationManager.NavigateTo("/build"))" Style=@buttonWidth>
+        <Card>
             <CardImage Source="/Images/PencilIcon.png"></CardImage>
             <CardBody>
-                <CardTitle Size="3">
+                    <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
                     Create
                 </CardTitle>
             </CardBody>
         </Card>
     </Button>
-    <Button @onclick="@(() => navigationManager.NavigateTo("/shop"))" >
-        <Card Style=@buttonWidth>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+    <Button @onclick="@(() => navigationManager.NavigateTo("/shop"))" Style=@buttonWidth>
+        <Card>
             <CardImage Source="/Images/ShoppingCart.png" ></CardImage>
             <CardBody>
-                <CardTitle Size="3">
+                <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
                     Shop
                 </CardTitle>
             </CardBody>
         </Card>
     </Button>
-</Div>
+    </Column>
+
+@* </Div> *@
+</Row>
 
 
 <Div Flex="Flex.AlignItems.Start" Padding="Padding.Is5">
@@ -51,6 +60,11 @@
     </Carousel>
 </Div>
 
+<div class="text-center">
+    Check out all these cool creations from other cool kids like you!
+
+</div>
+
 
 
 
@@ -64,6 +78,7 @@
 
 
 @code{
+   
     private string selectedSlide = "2";
 
     const string ContainerBackgroundColor = "rgba(165, 181, 167,.15)";
@@ -77,7 +92,8 @@
 
     string flexItemStyle = $"background-color: {ItemBackgroundColor}; border: 1px solid {ItemBorderColor};";
 
-    string buttonWidth = "width: 30%;";
+    string buttonWidth = "width: 100%;";
+
 
     
 }
