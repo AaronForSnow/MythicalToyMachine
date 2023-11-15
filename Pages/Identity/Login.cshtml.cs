@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MythicalToyMachine.Data;
 using System.Security.Claims;
 
 namespace MythicalToyMachine.Pages.Identity
@@ -10,6 +11,12 @@ namespace MythicalToyMachine.Pages.Identity
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
+        private readonly IUserRoleService userRoleService;
+
+        public LoginModel(IUserRoleService userRoleService)
+        {
+            this.userRoleService = userRoleService;
+        }
         public IActionResult OnGetAsync(string returnUrl = null)
         {
             string provider = "Google";
@@ -29,6 +36,10 @@ namespace MythicalToyMachine.Pages.Identity
             var GoogleUser = this.User.Identities.FirstOrDefault();
             if (GoogleUser.IsAuthenticated)
             {
+                await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = true,
