@@ -19,11 +19,19 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<Bodypart> Bodyparts { get; set; }
 
+    public virtual DbSet<CartItem> CartItems { get; set; }
+
     public virtual DbSet<Creature> Creatures { get; set; }
+
+    public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Kit> Kits { get; set; }
 
     public virtual DbSet<KitAccessory> KitAccessories { get; set; }
+
+    public virtual DbSet<Request> Requests { get; set; }
+
+    public virtual DbSet<RequestItem> RequestItems { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql("Name=ConnectionStrings:db");
@@ -70,6 +78,29 @@ public partial class PostgresContext : DbContext
                 .HasColumnName("partname");
         });
 
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("cart_item_pkey");
+
+            entity.ToTable("cart_item", "toy");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.KitId).HasColumnName("kit_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.SaveForLater).HasColumnName("save_for_later");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("cart_item_customer_id_fkey");
+
+            entity.HasOne(d => d.Kit).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.KitId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("cart_item_kit_id_fkey");
+        });
+
         modelBuilder.Entity<Creature>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("creature_pkey");
@@ -88,6 +119,24 @@ public partial class PostgresContext : DbContext
                 .HasColumnName("suggestedprice");
         });
 
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("customer_pkey");
+
+            entity.ToTable("customer", "toy");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Firstname)
+                .HasMaxLength(80)
+                .HasColumnName("firstname");
+            entity.Property(e => e.Surname)
+                .HasMaxLength(80)
+                .HasColumnName("surname");
+            entity.Property(e => e.Useremail)
+                .HasMaxLength(120)
+                .HasColumnName("useremail");
+        });
+
         modelBuilder.Entity<Kit>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("kit_pkey");
@@ -95,12 +144,19 @@ public partial class PostgresContext : DbContext
             entity.ToTable("kit", "toy");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ThumbnailPath).HasColumnName("thumbnail_path");
+            entity.Property(e => e.CreatorId).HasColumnName("creator_id");
             entity.Property(e => e.CreatureId).HasColumnName("creature_id");
             entity.Property(e => e.Kitname)
                 .HasMaxLength(40)
                 .HasColumnName("kitname");
             entity.Property(e => e.Shoulddisplay).HasColumnName("shoulddisplay");
+            entity.Property(e => e.ThumbnailPath)
+                .HasMaxLength(200)
+                .HasColumnName("thumbnail_path");
+
+            entity.HasOne(d => d.Creator).WithMany(p => p.Kits)
+                .HasForeignKey(d => d.CreatorId)
+                .HasConstraintName("kit_creator_id_fkey");
 
             entity.HasOne(d => d.Creature).WithMany(p => p.Kits)
                 .HasForeignKey(d => d.CreatureId)
@@ -120,11 +176,56 @@ public partial class PostgresContext : DbContext
 
             entity.HasOne(d => d.Acc).WithMany(p => p.KitAccessories)
                 .HasForeignKey(d => d.AccId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("kit_accessory_acc_id_fkey");
 
             entity.HasOne(d => d.Kit).WithMany(p => p.KitAccessories)
                 .HasForeignKey(d => d.KitId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("kit_accessory_kit_id_fkey");
+        });
+
+        modelBuilder.Entity<Request>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("request_pkey");
+
+            entity.ToTable("request", "toy");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
+            entity.Property(e => e.Requestdate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("requestdate");
+
+            entity.HasOne(d => d.Customer).WithMany(p => p.Requests)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("request_customer_id_fkey");
+        });
+
+        modelBuilder.Entity<RequestItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("request_items_pkey");
+
+            entity.ToTable("request_items", "toy");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.KitId).HasColumnName("kit_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.RequestId).HasColumnName("request_id");
+            entity.Property(e => e.RequestPrice)
+                .HasColumnType("money")
+                .HasColumnName("request_price");
+
+            entity.HasOne(d => d.Kit).WithMany(p => p.RequestItems)
+                .HasForeignKey(d => d.KitId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("request_items_kit_id_fkey");
+
+            entity.HasOne(d => d.Request).WithMany(p => p.RequestItems)
+                .HasForeignKey(d => d.RequestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("request_items_request_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);
