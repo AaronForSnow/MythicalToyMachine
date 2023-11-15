@@ -1,36 +1,104 @@
 ﻿@page "/"
 @inject NavigationManager navigationManager
-
+@using Blazorise
 <PageTitle>Index</PageTitle>
 
-<button @onclick="@(()=>navigationManager.NavigateTo("/watch"))">Watch</button>
+<Row> 
+@* <Div Flex="Flex.JustifyContent.Around"> *@
+    <Column ColumnSize="ColumnSize.Is4">
+    <Button @onclick="@(()=>navigationManager.NavigateTo("/watch"))" Style=@buttonWidth>
+        <Card >
+        <CardImage Source="/Images/YoutubeLogo.png"></CardImage>
+            <CardBody>
+                    <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
+                    Watch
+                </CardTitle>
+            </CardBody>
+        </Card>
+    </Button>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+    <Button @onclick="@(() => navigationManager.NavigateTo("/build"))" Style=@buttonWidth>
+        <Card>
+            <CardImage Source="/Images/PencilIcon.png"></CardImage>
+            <CardBody>
+                    <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
+                    Create
+                </CardTitle>
+            </CardBody>
+        </Card>
+    </Button>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+    <Button @onclick="@(() => navigationManager.NavigateTo("/shop"))" Style=@buttonWidth>
+        <Card>
+            <CardImage Source="/Images/ShoppingCart.png" ></CardImage>
+            <CardBody>
+                <CardTitle Size="3" TextOverflow="TextOverflow.Truncate">
+                    Shop
+                </CardTitle>
+            </CardBody>
+        </Card>
+    </Button>
+    </Column>
 
-<button @onclick="@(() => navigationManager.NavigateTo("/build"))">Create</button>
-
-<button @onclick="@(() => navigationManager.NavigateTo("/shop"))">Shop</button>
-
-
-<div id="ExampleToys" class="carousel slide">
-    <div class="carousel-inner"> 
-        <div class="carousel-item active">
-    <img src="\Images\KidWithToys.jpg" class="d-block w-100" alt="...">
-        </div>
-        <div class="carousel-item">
-            <img src="\Images\TeddyBear.jpg" class="d-block w-100" alt="...">
-        </div>
-        <div class="carousel-item">
-            <img src="\Images\KidWithToys.jpg" class="d-block w-100" alt="...">
-        </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
- </div>
+@* </Div> *@
+</Row>
 
 
-<button href="">Click here to get started!</button>
+<Div Flex="Flex.AlignItems.Start" Padding="Padding.Is5">
+    <Carousel @bind-SelectedSlide="@selectedSlide" Margin="Margin.Is1.OnMobile.Is5.OnDesktop">
+        <CarouselSlide Name="1">
+            <Image Source="/Images/FlyingDinousary.png" Display="Display.Block" Width="Width.Is100" />
+        </CarouselSlide>
+        <CarouselSlide Name="2">
+            <Image Source="/Images/KidWithToys.jpg" Display="Display.Block" Width="Width.Is100" />
+        </CarouselSlide>
+        <CarouselSlide Name="3">
+            <Image Source="/Images/TeddyBear.jpg" Display="Display.Block" Width="Width.Is100" />
+        </CarouselSlide>
+    </Carousel>
+</Div>
+
+<div class="text-center">
+    Check out all these cool creations from other cool kids like you!
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code{
+   
+    private string selectedSlide = "2";
+
+    const string ContainerBackgroundColor = "rgba(165, 181, 167,.15)";
+    const string ContainerBorderColor = "rgba(165, 181, 167,.15)";
+
+    const string ItemBackgroundColor = "rgba(95, 163, 103,.15)";
+    const string ItemBorderColor = "rgba(95, 163, 103,.15)";
+
+    string flexContainerStyle = $"background-color: {ContainerBackgroundColor};border: 1px solid {ContainerBorderColor};";
+    string alignItemsFlexContainerStyle = $"background-color: {ContainerBackgroundColor};border: 1px solid {ContainerBorderColor};height: 100px;";
+
+    string flexItemStyle = $"background-color: {ItemBackgroundColor}; border: 1px solid {ItemBorderColor};";
+
+    string buttonWidth = "width: 100%;";
+
+
+    
+}
+
+
+
+
+
