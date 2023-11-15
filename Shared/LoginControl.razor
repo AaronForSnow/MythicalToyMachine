@@ -1,7 +1,12 @@
 ﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Http
+@using Microsoft.EntityFrameworkCore;
+@using MythicalToyMachine.Data;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
+
+<!-- testing, for registering user in the database-->
+@inject IDbContextFactory<PostgresContext> dbcontext
 
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <meta name="google-signin-client_id" content="976414771735-nr7fhsilp16trl8clgd08pdfhu54bkc4.apps.googleusercontent.com">
@@ -28,10 +33,13 @@ else
 }
 @code {
     private ClaimsPrincipal User;
+    private string? cEmail = null;
     private string GivenName;
     private string Surname;
     private string Avatar;
-    protected override void OnInitialized()
+
+
+    protected override async void OnInitialized()
     {
         base.OnInitialized();
         try
@@ -74,10 +82,47 @@ else
             {
                 Avatar = "";
             }
+
+            // Just testing here, what if we search by email address to see if the email address already exists in our database?
+            //Get the email from the database
+
+            //else they souldn't be logged in
+
         }
         catch
         {
             throw new NotImplementedException();    
+        }
+    }
+    private async Task UserConectToDb()
+    {
+        using var context = dbcontext.CreateDbContext();
+        if (User.FindFirstValue(ClaimTypes.Email) is not null)
+        {
+            string? eCompare = User.FindFirst(ClaimTypes.Email)?.Value;
+            var lCustomers = await context.Customers.ToListAsync();
+            foreach (var c in lCustomers)
+            {
+                if (eCompare == c.Useremail)
+                {
+                    cEmail = c.Useremail;
+                }
+            }
+            if (cEmail is null)
+            {
+                //Make a new Customer
+                Customer newCustomer = new();
+                newCustomer.Surname = User.FindFirst(ClaimTypes.Surname)?.Value;
+                newCustomer.Firstname = User.FindFirstValue(ClaimTypes.Name);
+                newCustomer.Useremail = User.FindFirstValue(ClaimTypes.Email);
+                //TODO: it gives a warning even though we know we will always have an email,
+                //figure out how to properly respond to this
+                cEmail = User.FindFirstValue(ClaimTypes.Email);
+                //add it to database
+                await context.AddAsync<Customer>(newCustomer);
+                await context.SaveChangesAsync();
+            }
+            //Else, if cEmail is NOT null then the user already exists in the database, so we don't have to add them to the database a second time
         }
     }
 }

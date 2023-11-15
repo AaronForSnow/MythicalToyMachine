@@ -1,17 +1,61 @@
 ﻿@page "/cart"
 @using Microsoft.EntityFrameworkCore;
 @using MythicalToyMachine.Data
+@inject IHttpContextAccessor _httpContextAccessor
+
+@* @using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Authorization; *@
+@using System.Security.Claims;
+@* @using Microsoft.AspNetCore.Mvc;
+@using Microsoft.AspNetCore.Mvc.RazorPages; *@
 @inject IDbContextFactory<PostgresContext> dbcontext
 
+@* 
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="976414771735-nr7fhsilp16trl8clgd08pdfhu54bkc4.apps.googleusercontent.com"> *@
+    <!--
+        authorization stuff. ANyone can see the page, but it'll only pull items if you're logged in. -->
+@if(User is not null)
+{
+
+}
+
+<!--
+        for each item, itll just be a card with a quantity box
+        if no items, say "You have no items in your cart"
+
+        //copy the card from the products page.
+        all the kits in our cart db table that have the logged in customer id, will appear. including quantity. 
 
 
 
+        at the bottom, we have a send purchase request button that sends email of all the info to Hannah.
+    -->
 
-@code {
-   
+    <!-- 
+        We need a page that gets user email and makes a place in the data base for them if there is no place
+        it should also 
+-->
 
+
+
+    @code {
+        private ClaimsPrincipal User;
     protected override async Task OnInitializedAsync()
     {
-       
+        base.OnInitialized();
+        try
+        {
+            // Set the user to determine if they are logged in
+            User = _httpContextAccessor.HttpContext.User;
+        }
+        catch
+        {
+            
+        }
+        //we need the cartitem, customer, kit, creature, kit_accessory, accessory
     }
+
+    //
 }
