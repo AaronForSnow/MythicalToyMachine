@@ -50,6 +50,7 @@ public class UserRoleService : IUserRoleService
                 newCustomer.Firstname = name;
                 newCustomer.Useremail = email;
                 newCustomer.Id = context.Customers.Max(c => c.Id) + 1;
+                newCustomer.CustomerRoleId = 1; //1 = customer 2 = admin
 
                 //add it to database
                 context.Customers.Add(newCustomer);
