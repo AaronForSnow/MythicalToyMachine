@@ -19,6 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>();
+
+//builder.Services.AddSingleton<UserRoleService>();
+//We need to add an IUserRoleService
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
