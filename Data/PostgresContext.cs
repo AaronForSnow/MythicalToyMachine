@@ -25,6 +25,8 @@ public partial class PostgresContext : DbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<CustomerRole> CustomerRoles { get; set; }
+
     public virtual DbSet<Kit> Kits { get; set; }
 
     public virtual DbSet<KitAccessory> KitAccessories { get; set; }
@@ -126,6 +128,7 @@ public partial class PostgresContext : DbContext
             entity.ToTable("customer", "toy");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CustomerRoleId).HasColumnName("customer_role_id");
             entity.Property(e => e.Firstname)
                 .HasMaxLength(80)
                 .HasColumnName("firstname");
@@ -135,6 +138,22 @@ public partial class PostgresContext : DbContext
             entity.Property(e => e.Useremail)
                 .HasMaxLength(120)
                 .HasColumnName("useremail");
+
+            entity.HasOne(d => d.CustomerRole).WithMany(p => p.Customers)
+                .HasForeignKey(d => d.CustomerRoleId)
+                .HasConstraintName("customer_customer_role_id_fkey");
+        });
+
+        modelBuilder.Entity<CustomerRole>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("customer_role_pkey");
+
+            entity.ToTable("customer_role", "toy");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RoleDescription)
+                .HasMaxLength(40)
+                .HasColumnName("role_description");
         });
 
         modelBuilder.Entity<Kit>(entity =>

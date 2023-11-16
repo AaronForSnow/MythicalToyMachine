@@ -13,7 +13,11 @@ public partial class Customer
 
     public string? Surname { get; set; }
 
+    public int? CustomerRoleId { get; set; }
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public virtual CustomerRole? CustomerRole { get; set; }
 
     public virtual ICollection<Kit> Kits { get; set; } = new List<Kit>();
 
