@@ -1,14 +1,15 @@
 ﻿@page "/shop"
 @using Microsoft.EntityFrameworkCore;
 @using MythicalToyMachine.Data;
-@inject IDbContextFactory<PostgresContext> dbcontext
+@inject IDataService dataService
+@inject ShoppingCartService cart
 
 <h3>Shop</h3>
 
    @*  get the info for each product from the db *@
     @if(Kits is not null)
     {
-        <div class="Products d-flex flex-row">    
+        <div class="Products d-flex flex-row">
         @foreach (var k in Kits)
             {
                 <div class="card" style="width: 18rem;">
@@ -22,7 +23,7 @@
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                        <a href="" class="btn btn-primary">Add To cart</a>
+                        <button class="btn btn-primary cartButton" @onclick=@(()=>addToCart(k))>Add To cart</button>
                     </div>
                 </div>
             }
@@ -35,22 +36,18 @@
 
 @code {
 
-    Kit[]? Kits { get; set; }
+    IEnumerable<Kit> Kits { get; set; }
 
-    bool? addedToCart { get; set; } = false; 
+    bool? addedToCart { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = dbcontext.CreateDbContext();
-        Kits = await context.Kits
-                            .Include(C => C.Creature)
-                            .Include(k => k.KitAccessories)
-                            .ThenInclude(ka => ka.Acc)
-                            .ToArrayAsync();
+        Kits = await dataService.GetAllKits();
     }
 
-
-    //add to card button adds to card
-
+    private void addToCart(Kit kit)
+    {
+        cart.AddToCart(kit);
+    }
 
 }
