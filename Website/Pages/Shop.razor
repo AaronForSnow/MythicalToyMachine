@@ -3,6 +3,10 @@
 @using MythicalToyMachine.Data;
 @inject IDbContextFactory<PostgresContext> dbcontext
 
+    @* inject CartService cs
+onclick cartservice.add(item)
+    *@
+
 <h3>Shop</h3>
 
    @*  get the info for each product from the db *@
@@ -35,7 +39,11 @@
 
 @code {
 
+
+
     Kit[]? Kits { get; set; }
+
+
 
     bool? addedToCart { get; set; } = false; 
 
