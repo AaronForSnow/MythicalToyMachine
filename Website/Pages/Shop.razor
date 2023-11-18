@@ -1,7 +1,9 @@
 ﻿@page "/shop"
 @using Microsoft.EntityFrameworkCore;
 @using MythicalToyMachine.Data;
-@inject IDbContextFactory<PostgresContext> dbcontext
+@using MythicalToyMachine.Services;
+@inject IDataService dataService
+@inject ShoppingCartService cart
 
     @* inject CartService cs
 onclick cartservice.add(item)
@@ -26,7 +28,7 @@ onclick cartservice.add(item)
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                        <a href="" class="btn btn-primary">Add To cart</a>
+                       <button class="btn btn-primary cartButton" @onclick=@(()=>AddToCart(k))>Add To Cart</button>
                     </div>
                 </div>
             }
@@ -41,7 +43,7 @@ onclick cartservice.add(item)
 
 
 
-    Kit[]? Kits { get; set; }
+    IEnumerable<Kit> Kits { get; set; }
 
 
 
@@ -49,14 +51,14 @@ onclick cartservice.add(item)
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = dbcontext.CreateDbContext();
-        Kits = await context.Kits
-                            .Include(C => C.Creature)
-                            .Include(k => k.KitAccessories)
-                            .ThenInclude(ka => ka.Acc)
-                            .ToArrayAsync();
+        Kits = await dataService.GetKitsAsync();
     }
 
+
+    public void AddToCart(Kit kit)
+    {
+        cart.AddKitToCart(kit);
+    }
 
     //add to card button adds to card
 

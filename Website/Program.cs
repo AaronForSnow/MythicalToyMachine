@@ -10,8 +10,10 @@ using MythicalToyMachine.Data;
 using System.Net.Http;
 using Blazorise;
 using Blazorise.Bootstrap;
-
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using MythicalToyMachine;
+using MythicalToyMachine.Data;
+using MythicalToyMachine.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,8 @@ builder.Services.AddDbContextFactory<PostgresContext>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddTransient<IDataService, PostgresDataService>();
+builder.Services.AddScoped<ShoppingCartService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
