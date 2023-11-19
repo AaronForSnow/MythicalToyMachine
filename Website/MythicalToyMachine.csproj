@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="New folder\" />
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

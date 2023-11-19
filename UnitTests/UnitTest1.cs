@@ -1,10 +1,12 @@
 using Bunit;
 using Bunit.TestDoubles;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MythicalToyMachine.Data;
 using MythicalToyMachine.Pages;
 using MythicalToyMachine.Services;
+using MythicalToyMachine.Shared;
 
 namespace UnitTests
 {
@@ -43,8 +45,37 @@ namespace UnitTests
             button.Click();
 
             //assert
-            Assert.Equal(1, sh.AllKitsThatAreInTheCart.Count);
+            //Assert.Equal(1, sh.AllKitsThatAreInTheCart.Count);
+            Assert.Single(sh.AllKitsThatAreInTheCart);
             Assert.Equal("Batman Kit", sh.AllKitsThatAreInTheCart[0].Kitname);
+        }
+
+        [Fact]
+        public void CanDisplayItemsInUserCart()
+        {
+            var sh = new ShoppingCartService();
+            Services.AddSingleton<ShoppingCartService>(sh);
+            Mock<IDataService> mock = new Mock<IDataService>();
+            mock.Setup(n => n.GetKitsAsync()).ReturnsAsync(new[]
+            {
+                new Kit
+                {
+                    Id= 1,
+                    Kitname = "testname"
+                }
+            });
+            Services.AddTransient<IDataService>(o => mock.Object); //this adds it to the app
+            var cut = RenderComponent<Shop>(); //renders shop page
+            var cutCart = RenderComponent<Cart>();
+
+            //Act
+            var button = cut.WaitForElement(".cartButton");
+            button.Click(); //now the kit is in our cart
+
+            var cartList = cutCart.WaitForElement(".Cart");
+
+            //Assert
+            cutCart.WaitForElements("ul li").Should().HaveCount(1);
         }
     }
 
@@ -62,6 +93,15 @@ namespace UnitTests
         public void ResetUser()
         {
             
+        }
+
+        public async Task<Customer> GetUser(string email)
+        {
+            return new Customer
+            {
+                Id = 5,
+                Useremail = email
+            };
         }
     }
 

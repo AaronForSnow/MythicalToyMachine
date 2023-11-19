@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace MythicalToyMachine.Data;
 
@@ -10,6 +12,10 @@ public interface IUserRoleService
     public IEnumerable<string> Roles { get; }
     public Task LookUpUser(string email, string name, string surname);
     public void ResetUser();
+
+    public Task<Customer> GetUser(string email);
+
+   
 }
 
 public class UserRoleService : IUserRoleService
@@ -32,15 +38,25 @@ public class UserRoleService : IUserRoleService
         throw new NotImplementedException();
     }
 
+    public async Task<Customer> GetUser(string email)
+    {
+        var lCustomer = new Customer();
+        if (email is not null)
+        {
+            string? eCompare = email;
+             lCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Useremail == email);
+
+        }
+        return lCustomer == null ? null : lCustomer;
+    }
+
+
     public async Task LookUpUser( string email, string name, string surname)
     {
         if (email is not null)
         {
             string? eCompare = email;
             var lCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Useremail == email);
-         
-            
-                
             
             if (lCustomer is null)
             {

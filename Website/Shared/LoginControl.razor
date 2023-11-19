@@ -31,6 +31,8 @@ else
     private string GivenName;
     private string Surname;
     private string Avatar;
+    private string Email;
+    private int OurCustomerID;
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -61,6 +63,18 @@ else
             else
             {
                 Surname = "";
+            }
+            //Try to get email
+            var email =
+            _httpContextAccessor.HttpContext.User
+            .FindFirst(ClaimTypes.Email);
+            if (email != null)
+            {
+                Email = email.Value;
+            }
+            else
+            {
+                Email = "";
             }
             // Try to get Avatar
             var avatar =

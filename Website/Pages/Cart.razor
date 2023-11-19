@@ -1,17 +1,80 @@
 ﻿@page "/cart"
 @using Microsoft.EntityFrameworkCore;
 @using MythicalToyMachine.Data
-@inject IDbContextFactory<PostgresContext> dbcontext
+@using MythicalToyMachine.Services;
+@using System.Security.Claims;
+@inject IDataService dataService
+@inject ShoppingCartService cart
+@inject IUserRoleService userRoleService
+@inject IHttpContextAccessor _httpContextAccessor
 
 
+<h3>Cart</h3>
+
+@*  get each cart item from the carty cart *@
+@if (ItemsInCart is not null)
+{
+    <div class="Products d-flex flex-row">
+        @foreach (var k in ItemsInCart)
+        {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src=@k.Kit.ThumbnailPath>
+                <div class="card-body">
+                    <h5 class="card-title">@(k.Kit.Kitname) </h5>
+                    <h7 class="card-body">@(k.Kit.Creature?.Creaturename) base figure</h7>
+                    <ul>
+                        @foreach (var a in k.Kit.KitAccessories)
+                        {
+                            <li>@(a.Acc?.Accessoryname)</li>
+                        }
+                    </ul>
+                    <button class="btn btn-primary cartButton" @onclick=@(()=>RemoveFromCart(k.Kit))>Remove</button>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div>Loading...</div>
+}
 
 
 
 @code {
-   
+    private ClaimsPrincipal User;
+    public string Email;
+    IEnumerable<CartItem> ItemsInCart {get; set;}
+
+    public string GetCurrentUserEmail()
+    {
+        User = _httpContextAccessor.HttpContext.User;
+        var email =
+             _httpContextAccessor.HttpContext.User
+             .FindFirst(ClaimTypes.Email);
+        if (email != null)
+        {
+            Email = email.Value;
+        }
+        else
+        {
+            Email = "";
+        }
+        return Email;
+    }
+
+
+
+    public void RemoveFromCart(Kit k)
+    {
+        cart.RemoveKitFromCart(k);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-       
+        int customerId = userRoleService.GetUser(GetCurrentUserEmail()).Result.Id;
+
+
+        ItemsInCart = await dataService.GetKitsFromCart(customerId);
     }
 }

@@ -30,6 +30,8 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddTransient<IDataService, PostgresDataService>();
 builder.Services.AddScoped<ShoppingCartService>();
 
+
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
@@ -42,6 +44,7 @@ builder.Services.AddAuthentication().AddGoogle(options =>
 // fron: https://github.com/aspnet/Blazor/issues/1554 ""
 // Adds HttpContextAccessor Used to determine if d user is logged in and what their username is
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<HttpContextAccessor>();
 // Required for HttpClient support in the Blanbl Client project
 builder.Services.AddHttpClient();

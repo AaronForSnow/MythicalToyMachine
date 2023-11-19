@@ -6,6 +6,9 @@ namespace MythicalToyMachine.Services;
 public interface IDataService
 {
     public Task<IEnumerable<Kit>> GetKitsAsync();
+
+    public Task<IEnumerable<CartItem>> GetKitsFromCart(int customerId);
+
 }
 
 public class PostgresDataService : IDataService
@@ -23,6 +26,15 @@ public class PostgresDataService : IDataService
                            .Include(k => k.KitAccessories)
                            .ThenInclude(ka => ka.Acc)
                            .ToArrayAsync();
+    }
+
+    public async Task<IEnumerable<CartItem>>GetKitsFromCart(int customerId)
+    {
+        return await _context.CartItems
+                            .Include(C => C.Customer)
+                            .Include(K => K.Kit)
+                            .Where(k => k.CustomerId == customerId) 
+                            .ToListAsync();
     }
 }
 

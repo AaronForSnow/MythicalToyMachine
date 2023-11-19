@@ -11,4 +11,9 @@ public class ShoppingCartService
     {
         AllKitsThatAreInTheCart.Add(kit);
     }
+
+    public void RemoveKitFromCart(Kit kit)
+    {
+        AllKitsThatAreInTheCart.Remove(kit);
+    }
 }

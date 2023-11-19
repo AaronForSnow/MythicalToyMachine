@@ -12,10 +12,10 @@ onclick cartservice.add(item)
 <h3>Shop</h3>
 
    @*  get the info for each product from the db *@
-    @if(Kits is not null)
+    @if(KitsToDisplay is not null)
     {
         <div class="Products d-flex flex-row">    
-        @foreach (var k in Kits)
+        @foreach (var k in KitsToDisplay)
             {
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src=@k.ThumbnailPath>
@@ -43,7 +43,7 @@ onclick cartservice.add(item)
 
 
 
-    IEnumerable<Kit> Kits { get; set; }
+    IEnumerable<Kit> KitsToDisplay { get; set; }
 
 
 
@@ -51,7 +51,7 @@ onclick cartservice.add(item)
 
     protected override async Task OnInitializedAsync()
     {
-        Kits = await dataService.GetKitsAsync();
+        KitsToDisplay = await dataService.GetKitsAsync();
     }
 
 
