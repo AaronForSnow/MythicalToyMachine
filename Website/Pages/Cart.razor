@@ -6,7 +6,7 @@
 @inject IDataService dataService
 @inject ShoppingCartService cart
 @inject IUserRoleService userRoleService
-@inject IHttpContextAccessor _httpContextAccessor
+@inject AuthenticationStateProvider authStateProvider
 
 
 <h3>Cart</h3>
@@ -46,11 +46,12 @@ else
     public string Email;
     IEnumerable<CartItem> ItemsInCart {get; set;}
 
-    public string GetCurrentUserEmail()
+    public async Task<string> GetCurrentUserEmail()
     {
-        User = _httpContextAccessor.HttpContext.User;
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        User = authState.User;
         var email =
-             _httpContextAccessor.HttpContext.User
+            User
              .FindFirst(ClaimTypes.Email);
         if (email != null)
         {
@@ -72,7 +73,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        int customerId = userRoleService.GetUser(GetCurrentUserEmail()).Result.Id;
+        int customerId = (await userRoleService.GetUser(await GetCurrentUserEmail())).Id;
 
 
         ItemsInCart = await dataService.GetKitsFromCart(customerId);

@@ -55,6 +55,13 @@ namespace UnitTests
         {
             var sh = new ShoppingCartService();
             Services.AddSingleton<ShoppingCartService>(sh);
+            Mock<IUserRoleService> roleMock = new Mock<IUserRoleService>();
+            roleMock.Setup(m => m.GetUser(It.IsAny<string>())).ReturnsAsync(new Customer()
+            {
+                Id = 1
+            });
+            Services.AddSingleton(roleMock.Object);
+            this.AddTestAuthorization(); //look up bunit docs for how to pass in the email
             Mock<IDataService> mock = new Mock<IDataService>();
             mock.Setup(n => n.GetKitsAsync()).ReturnsAsync(new[]
             {
@@ -66,11 +73,11 @@ namespace UnitTests
             });
             Services.AddTransient<IDataService>(o => mock.Object); //this adds it to the app
             var cut = RenderComponent<Shop>(); //renders shop page
-            var cutCart = RenderComponent<Cart>();
 
             //Act
             var button = cut.WaitForElement(".cartButton");
             button.Click(); //now the kit is in our cart
+            var cutCart = RenderComponent<Cart>();
 
             var cartList = cutCart.WaitForElement(".Cart");
 
