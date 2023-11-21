@@ -8,7 +8,7 @@ public interface IUserRoleService
     //
     public bool IsAuthenticated { get; }
     public IEnumerable<string> Roles { get; }
-    public Task LookUpUser(string email, string name, string surname);
+    public Task<int> LookUpUser(string email, string name, string surname);
     public void ResetUser();
 }
 
@@ -29,16 +29,19 @@ public class UserRoleService : IUserRoleService
 
     public void ResetUser()
     {
-        throw new NotImplementedException();
+        IsAuthenticated = false;
+        roles = new();
+
+        //throw new NotImplementedException();
     }
 
-    public async Task LookUpUser( string email, string name, string surname)
+    public async Task<int> LookUpUser( string email, string name, string surname)
     {
         if (email is not null)
         {
             string? eCompare = email;
             var lCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Useremail == email);
-         
+            
             
                 
             
@@ -55,9 +58,15 @@ public class UserRoleService : IUserRoleService
                 //add it to database
                 context.Customers.Add(newCustomer);
                 await context.SaveChangesAsync();
+                lCustomer = newCustomer;
             }
             //Else, if cEmail is NOT null then the user already exists in the database, so we don't have to add them to the database a second time
             IsAuthenticated = true;
+            return lCustomer.Id;
+        }
+        else
+        {
+            return 0;
         }
     }
 }

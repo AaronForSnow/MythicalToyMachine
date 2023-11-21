@@ -1,12 +1,21 @@
 ﻿@page "/shop"
 @using Microsoft.EntityFrameworkCore;
 @using MythicalToyMachine.Data;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Authorization;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _httpContextAccessor
+@inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
+@inject IUserRoleService userRoleService
 
 <h3>Shop</h3>
 
    @*  get the info for each product from the db *@
-    @if(Kits is not null)
+
+@if(Kits is not null)
     {
         <div class="Products d-flex flex-row">    
         @foreach (var k in Kits)
@@ -22,11 +31,23 @@
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                        <a href="" class="btn btn-primary">Add To cart</a>
+                        <a @onclick="() => AttemptAddToCart(k.Id)" class="btn btn-primary">Add To cart</a>
                     </div>
                 </div>
             }
         </div>
+
+        @if(SuccessMessage is not null)
+        {
+            <br />
+            <div class="alert alert-success">@SuccessMessage</div>        
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <br />
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
     }
     else
     {
@@ -36,8 +57,11 @@
 @code {
 
     Kit[]? Kits { get; set; }
-
-    bool? addedToCart { get; set; } = false; 
+    private ClaimsPrincipal User;
+    bool? addedToCart { get; set; } = false;
+    bool NotLoggedIn = false;
+    string? SuccessMessage { get; set; }
+    string? ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,8 +71,63 @@
                             .Include(k => k.KitAccessories)
                             .ThenInclude(ka => ka.Acc)
                             .ToArrayAsync();
-    }
 
+    }
+    private async Task AttemptAddToCart(int kitId)
+    {
+        int userId;
+        try
+        {
+            User = _httpContextAccessor.HttpContext.User;
+            var GoogleUser = User.Identities.FirstOrDefault();
+            if (GoogleUser.IsAuthenticated)
+            {
+                userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
+
+            }
+            else
+            {
+                SuccessMessage = null;
+                ErrorMessage = "You need to sign in first in order to add to cart!";
+                NotLoggedIn = true;
+                return;
+            }
+
+
+            if (userRoleService.IsAuthenticated)
+            {
+                await AddToCart(userId, kitId);
+                SuccessMessage = "Succesfully added item to cart!";
+                ErrorMessage = null;
+                addedToCart = true;
+            }
+
+
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+    private async Task AddToCart(int userid, int kitid, int? Qty = null)
+    {
+        var context = await dbcontext.CreateDbContextAsync();
+        var myNewKit = new CartItem()
+            {
+                Id = context.CartItems.Max(c => c.Id) + 1,
+                CustomerId = userid,
+                KitId = kitid,
+                Quantity = Qty ?? 1,
+                SaveForLater = false
+            };
+
+        context.CartItems.Add(myNewKit);
+        await context.SaveChangesAsync();
+    }
+    
 
     //add to card button adds to card
 

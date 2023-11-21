@@ -1,6 +1,7 @@
 using Bunit.TestDoubles;
 using Moq;
 using MythicalToyMachine.Data;
+using System.Data;
 
 namespace UnitTests
 {
@@ -30,7 +31,7 @@ namespace UnitTests
 
         public void ResetUser()
         {
-            
+
         }
     }
 }
