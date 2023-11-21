@@ -32,6 +32,7 @@
                         }
                     </ul>
                         <a @onclick="() => AttemptAddToCart(k.Id)" class="btn btn-primary">Add To cart</a>
+                        <a> Price: $@CalulatePrice(k.Id)</a>
                     </div>
                 </div>
             }
@@ -111,6 +112,20 @@
         {
 
         }
+    }
+    private decimal CalulatePrice(int kitid)
+    {
+        var CalcKit = Kits.Where(k => k.Id == kitid).FirstOrDefault();
+        decimal price = 0;
+        if (CalcKit is not null)
+        {
+            foreach (var a in CalcKit.KitAccessories)
+            {
+                price += a.Acc.Price ?? 0;
+            }
+            price += CalcKit.Creature.Suggestedprice ?? 0;
+        }
+        return price;
     }
     private async Task AddToCart(int userid, int kitid, int? Qty = null)
     {

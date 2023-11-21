@@ -1,17 +1,117 @@
 ﻿@page "/cart"
 @using Microsoft.EntityFrameworkCore;
-@using MythicalToyMachine.Data
+@using MythicalToyMachine.Data;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Authorization;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _httpContextAccessor
+@inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
+@inject IUserRoleService userRoleService
 
+<h3>Cart</h3>
 
+@if (userRoleService.IsAuthenticated)
+{
+    @if(items is null || items.Length == 0)
+    {
+        <div>Your Cart is currently empty!</div>
+    }
+    else
+    {
+        @foreach(var item in items)
+        {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src=@item.Kit.ThumbnailPath>
+                <div class="card-body">
+                    <h5 class="card-title">@(item.Kit.Kitname) </h5>
+                    <h7 class="card-body">@(item.Kit.Creature?.Creaturename) base figure</h7>
+                    <ul>
+                        @foreach (var a in item.Kit.KitAccessories)
+                        {
+                            <li>@(a.Acc?.Accessoryname)</li>
+                        }
+                    </ul>
+                    <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary">Remove</a>
+                    <a> Price: $@CalulatePrice(item.Id)</a>
+                </div>
+            </div>
 
+        
+        }   
+        <div>Cart Total: $@TotalPrice</div>
+    }
+}
+else
+{
+    <a>You are not logged in. Log in to see your cart.</a>
+}
 
 
 @code {
-   
+    private ClaimsPrincipal User;
+    CartItem[] items { get; set; }
+    private decimal TotalPrice { get; set; } 
+    private int userId {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
-       
+        TotalPrice = 0;
+        User = _httpContextAccessor.HttpContext.User;
+        var GoogleUser = User.Identities.FirstOrDefault();
+        if (GoogleUser.IsAuthenticated)
+        {
+            userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                );
+        }
+        if(userRoleService.IsAuthenticated)
+        {
+            var context = dbcontext.CreateDbContext();
+            items = await context.CartItems.Where(i => i.CustomerId == userId)
+                                           .Include(k => k.Kit)                           
+                                           .ThenInclude(C => C.Creature)
+                                           .Include(k => k.Kit)
+                                           .ThenInclude(j => j.KitAccessories)
+                                           .ThenInclude(a => a.Acc)
+                                           .ToArrayAsync();
+            foreach (var item in items)
+            {
+                TotalPrice += CalulatePrice(item.Id);
+            }
+        }
+    }
+    private decimal CalulatePrice(int itemid)
+    {
+        var CalcKit = items.Where(k => k.Id == itemid).FirstOrDefault();
+        decimal price = 0;
+        if (CalcKit is not null)
+        {
+            foreach (var a in CalcKit.Kit.KitAccessories)
+            {
+                price += a.Acc.Price ?? 0;
+            }
+            price += CalcKit.Kit.Creature.Suggestedprice ?? 0;
+        }
+        return price;
+    }
+
+    private async Task RemoveItem(int itemID)
+    {
+        var context = dbcontext.CreateDbContext();
+        var itemToRemove = await context.CartItems.Where(i => i.Id == itemID).FirstOrDefaultAsync();
+        try
+        {
+            context.CartItems.Remove(itemToRemove);
+            await context.SaveChangesAsync();
+            await OnInitializedAsync();
+        }
+        catch(Exception e)
+        {
+            string ErrorMessage = e.Message;
+        }
     }
 }
