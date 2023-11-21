@@ -31,7 +31,11 @@
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                        <a @onclick="() => AttemptAddToCart(k.Id)" class="btn btn-primary">Add To cart</a>
+                    <div class="form-outline">  @* style="width: 22rem;">  *@  
+                        <input min="1" max="20" type="number" id="typeNumber" class="form-control" />    
+                        <label class="form-label" for="typeNumber">Quantity</label>
+                    </div>
+                        <a @onclick="() => AttemptAddToCart(k.Id, 1)" class="btn btn-primary">Add To cart</a>
                         <a> Price: $@CalulatePrice(k.Id)</a>
                     </div>
                 </div>
@@ -56,8 +60,7 @@
     }
 
 @code {
-
-    Kit[]? Kits { get; set; }
+    Kit[] Kits { get; set; }
     private ClaimsPrincipal User;
     bool? addedToCart { get; set; } = false;
     bool NotLoggedIn = false;
@@ -74,7 +77,7 @@
                             .ToArrayAsync();
 
     }
-    private async Task AttemptAddToCart(int kitId)
+    private async Task AttemptAddToCart(int kitId, int? quantity)
     {
         int userId;
         try
@@ -100,7 +103,7 @@
 
             if (userRoleService.IsAuthenticated)
             {
-                await AddToCart(userId, kitId);
+                await AddToCart(userId, kitId, quantity);
                 SuccessMessage = "Succesfully added item to cart!";
                 ErrorMessage = null;
                 addedToCart = true;
