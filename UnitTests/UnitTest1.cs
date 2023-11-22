@@ -24,9 +24,10 @@ namespace UnitTests
 
         public IEnumerable<string> Roles { get; }= new List<string> { "customer", "admin" };
 
-        public Task LookUpUser(string email, string name, string surname)
+        public Task<int> LookUpUser(string email, string name, string surname)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(0);
+            //return CompletedTask;
         }
 
         public void ResetUser()
