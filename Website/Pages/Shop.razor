@@ -32,10 +32,10 @@
                         }
                     </ul>
                     <div class="form-outline">  @* style="width: 22rem;">  *@  
-                        <input min="1" max="20" type="number" id="typeNumber" class="form-control" />    
+                        <input min="1" max="20" type="number" id="typeNumber" class="form-control" />  @*TODO: Get the quantity for a cart item here*@  
                         <label class="form-label" for="typeNumber">Quantity</label>
                     </div>
-                        <a @onclick="() => AttemptAddToCart(k.Id, 1)" class="btn btn-primary">Add To cart</a>
+                        <a @onclick="() => AttemptAddToCart(k.Id, 1)" class="btn btn-primary">Add To cart</a> @*TODO: pass it in here*@
                         <a> Price: $@CalulatePrice(k.Id)</a>
                     </div>
                 </div>

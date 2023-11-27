@@ -18,6 +18,6 @@ public class EmailController : Controller
     public async Task<IActionResult> Index(string email, string subject, string message)
     {
         await emailSender.SendEmailAsync(email, subject, message);
-        return View();
+        return Ok();
     }
 }
