@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @using System.Security.Claims;
 @using Microsoft.AspNetCore.Http
+@using MythicalToyMachine.Data.DTOs;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
@@ -36,13 +37,17 @@
                     </ul>
                     <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary">Remove</a>
                     <a> Price: $@CalulatePrice(item.Id)</a>
-                </div>
+                </div>/
             </div>
 
         
         }   
         <div>Cart Total: $@TotalPrice</div>
     }
+
+    <Button @onclick=@Checkout()>Checkout</Button>
+
+    <Alert>@Message</Alert>
 }
 else
 {
@@ -51,6 +56,7 @@ else
 
 
 @code {
+    string Message = "";
     private ClaimsPrincipal User;
     CartItem[] items { get; set; }
     private decimal TotalPrice { get; set; } 
@@ -113,5 +119,65 @@ else
         {
             string ErrorMessage = e.Message;
         }
+    }
+
+    public async Task Checkout()
+    {
+        if (items is null)
+        {
+            Message = "Please add an item to your cart before attempting to checkout";
+            return;
+        }
+        else
+        {
+            AddCartToRequestItem();
+            //start with purchase, purchaseitem, 
+
+            //take everything from the current user's cart
+            //transfer it all into a request and requestitem 
+            //save to DB
+            //If saved to DB, put that data in an email and send a copy to Hannah and the customer. 
+            //redirect user to "Order placed" page. 
+        }
+    }
+
+    public async Task AddCartToRequest()
+    {
+        //make a new DBContext
+        var context = dbcontext.CreateDbContext();
+        //make a new request
+        var newRequest = new RequestDto()
+            {
+                CustomerId = userId,
+                Requestdate = DateTime.Now
+            };
+        var addedRequest = context.Add(newRequest);
+        await context.SaveChangesAsync();
+        int requestId = newRequest.Id;
+        context.DisposeAsync();
+
+        //add each item
+        foreach (var item in items)
+        {
+            await AddCartToRequestItem(item, requestId);
+        }
+    }
+
+    public async Task AddCartToRequestItem(CartItem item, int requestID)
+    {
+        //make a new DBContext
+        var context = dbcontext.CreateDbContext();
+
+        //add new line to requestitem
+
+        context.Add(new RequestItemDto()
+        {
+            RequestId = requestID,
+            KitId = item.KitId,
+            Quantity = item.Quantity
+            //add the request price
+
+        });
+
     }
 }
