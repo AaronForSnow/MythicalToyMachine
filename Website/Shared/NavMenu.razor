@@ -30,7 +30,7 @@
             <LoginControl />
         </NavLink>
     </div>
-    @if (userRoleService.IsAuthenticated)
+    @if (userRoleService.IsAuthenticated && role != "admin")
     {
         <div style="flex: 1" class="nav-item justify-content-end">
             <NavLink class="nav-link" href="cart">
@@ -43,6 +43,12 @@
         <div style="flex: 1" class="nav-item justify-content-end">
             <NavLink class="nav-link" href="manager">
                 <span class="oi oi-person" aria-hidden="true"></span> Manager
+            </NavLink>
+        </div>
+
+        <div style="flex: 1" class="nav-item justify-content-end">
+            <NavLink class="nav-link" href="imageUpload">
+                <span class="oi oi-image" aria-hidden="true"></span> Upload
             </NavLink>
         </div>
     }
