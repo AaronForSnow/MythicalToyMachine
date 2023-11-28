@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MythicalToyMachine", "Websi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{7E74452B-D33A-45CD-9377-DB46B6595C3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CraigSwAPI", "CraigSwAPI\CraigSwAPI.csproj", "{E964525F-CCDE-47CF-852A-2DA0D30D1A92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CraigSwAPI", "CraigSwAPI\CraigSwAPI.csproj", "{E964525F-CCDE-47CF-852A-2DA0D30D1A92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
