@@ -7,9 +7,9 @@
     <UserSecretsId>1d90b422-1e36-4d8c-a4c8-f3230d6926d8</UserSecretsId>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
+  <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />

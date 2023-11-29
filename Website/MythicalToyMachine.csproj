@@ -7,9 +7,9 @@
     <UserSecretsId>c9014ba6-b3a8-46ba-9c0e-48ed856eb79b</UserSecretsId>
   </PropertyGroup>
 
-  <!--<PropertyGroup>
+  <PropertyGroup>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
 
   <ItemGroup>
