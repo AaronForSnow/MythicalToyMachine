@@ -91,12 +91,15 @@ else
                 Model.Kitname = Model.Id.ToString();   
             }
             //Model.Kitname = Model.Kitname.Replace(" ", "");
-            var path = $"wwwroot/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
-            await using FileStream fs = new(path, FileMode.Create);
+            // var path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
+            var selectedFile = e.GetMultipleFiles().FirstOrDefault();
+            string fileExtention = System.IO.Path.GetExtension(selectedFile.Name);
+            var path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id + fileExtention.ToLower()}";
+            await using FileStream fs = new("wwwroot" + path, FileMode.Create);
             await e.File.OpenReadStream().CopyToAsync(fs); //maxfilesize
-            path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
+            //path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
 
-            NewKitThumbnail(Model.Id, path);
+            await NewKitThumbnail(Model.Id, path);
             NV.NavigateTo("/imageUpload",true);
         }
         catch (Exception ex)
