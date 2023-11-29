@@ -93,14 +93,11 @@ else
             {
                 Model.Kitname = Model.Id.ToString();   
             }
-            //Model.Kitname = Model.Kitname.Replace(" ", "");
-            // var path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
             var selectedFile = e.GetMultipleFiles().FirstOrDefault();
             string fileExtention = System.IO.Path.GetExtension(selectedFile.Name);
             var path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id + fileExtention.ToLower()}";
             await using FileStream fs = new("wwwroot" + path, FileMode.Create);
-            await e.File.OpenReadStream().CopyToAsync(fs); //maxfilesize
-                                                           //path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
+            await e.File.OpenReadStream().CopyToAsync(fs); //no max file size!!! 
 
             await NewKitThumbnail(Model.Id, path);
             NV.NavigateTo("/imageUpload",true);
@@ -121,6 +118,7 @@ else
     }
     private async Task SetModel(int kitID)
     {
+        //*method needs valid kitID
         var context = dbcontext.CreateDbContext();
         Model = await context.Kits.Where(k => k.Id == kitID).FirstOrDefaultAsync();
         ModelMessage = $"Replace Image for {Model.Kitname}";
