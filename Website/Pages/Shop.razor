@@ -132,6 +132,7 @@
     }
     private async Task AddToCart(int userid, int kitid, int? Qty = null)
     {
+        //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
         var context = await dbcontext.CreateDbContextAsync();
         var myNewKit = new CartItem()
             {
