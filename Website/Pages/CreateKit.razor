@@ -16,14 +16,7 @@
 
 @if(userRoleService.IsAuthenticated && role == "admin")
     {     
-        @if (Editing)
-        {
-            <EditForm Model="@Model" OnSubmit="@Submit">
-                <InputFile OnChange="@LoadPick" />
-                <button type="submit">Submit</button>
-            </EditForm>
-        }
-
+        <div class="Products d-flex flex-row"> 
         @foreach(var k in Kits)
         {
             <div class="card" style="width: 18rem;">
@@ -33,6 +26,15 @@
                 <a @onclick="() => SetModel(k.Id)" class="btn btn-primary">Edit</a> 
             </div>
             </div>
+        }
+        </div>
+        @if (Editing)
+        {
+            <EditForm Model="@Model" OnSubmit="@Submit">
+                <h3>@ModelMessage</h3>
+                <InputFile OnChange="@LoadPick" />
+                <button type="submit">Submit</button>
+            </EditForm>
         }
     }
 else
@@ -48,6 +50,7 @@ else
     private int userId { get; set; }
     private string? role { get; set; }
     private bool Editing { get; set; }
+    private string ModelMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,7 +100,7 @@ else
             var path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id + fileExtention.ToLower()}";
             await using FileStream fs = new("wwwroot" + path, FileMode.Create);
             await e.File.OpenReadStream().CopyToAsync(fs); //maxfilesize
-            //path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
+                                                           //path = $"/Images/{Model.Kitname.Replace(" ", "") + Model.Id}.jpg";
 
             await NewKitThumbnail(Model.Id, path);
             NV.NavigateTo("/imageUpload",true);
@@ -120,6 +123,7 @@ else
     {
         var context = dbcontext.CreateDbContext();
         Model = await context.Kits.Where(k => k.Id == kitID).FirstOrDefaultAsync();
+        ModelMessage = $"Replace Image for {Model.Kitname}";
         Editing = true;
     }
 
