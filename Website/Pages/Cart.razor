@@ -130,19 +130,25 @@ else
         }
         else
         {
-            AddCartToRequestItem();
+            await AddCartToRequest();
             //start with purchase, purchaseitem, 
 
-            //take everything from the current user's cart
-            //transfer it all into a request and requestitem 
-            //save to DB
+            //TODO: figure out how to check for success above
+
             //If saved to DB, put that data in an email and send a copy to Hannah and the customer. 
+            await SendConfirmationEmail();
             //redirect user to "Order placed" page. 
         }
     }
 
+    public async Task SendConfirmationEmail()
+    {
+        //call the API methods that have to do with sending the emails
+    }
+
     public async Task AddCartToRequest()
     {
+        //TODO: as we go thorugh the list, add items to list so we can aceess it later for the email
         //make a new DBContext
         var context = dbcontext.CreateDbContext();
         //make a new request
@@ -154,7 +160,7 @@ else
         var addedRequest = context.Add(newRequest);
         await context.SaveChangesAsync();
         int requestId = newRequest.Id;
-        context.DisposeAsync();
+        await context.DisposeAsync();
 
         //add each item
         foreach (var item in items)
@@ -174,10 +180,11 @@ else
         {
             RequestId = requestID,
             KitId = item.KitId,
-            Quantity = item.Quantity
-            //add the request price
-
+            Quantity = item.Quantity,
+            RequestPrice = CalulatePrice(item.Id)
         });
+
+        await context.SaveChangesAsync();
 
     }
 }
