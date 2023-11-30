@@ -1,18 +1,155 @@
 ﻿@page "/build"
+@using Microsoft.EntityFrameworkCore;
+@using MythicalToyMachine.Data;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Authorization;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _httpContextAccessor
+@inject HttpClient Http
+@inject IDbContextFactory<PostgresContext> dbcontext
+@inject IUserRoleService userRoleService
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>BuildAToy</PageTitle>
 
-<h1>Counter </h1>
+<h1>Build A Toy</h1>
+@if (userRoleService.IsAuthenticated)
+{
+    <label for="kitCreature">Choose a Creature:</label>
 
-<p role="status">Current count: @currentCount</p>
+    <select @bind="creature" name="kitCreature" id="kitCreature">
+        @foreach(var c in Creatures)
+        {
+            <option value="@c">@c.Creaturename</option>
+        }
+    </select>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    @foreach(var a in Accessories)
+    {
+        <button @onclick="() => AddAccessory(a.Id)">Add @a.Accessoryname</button>
+    }
+
+    <div class="Products d-flex flex-row">
+    @foreach(var u in UserAccessories)
+    {
+        <div class="flex-row">
+            <div>@u.Acc.Accessoryname</div>
+            <div>@u.Qty</div>
+            <button @onclick="() => RemoveAccessory(u.AccId)">Remove 1</button>
+        </div>
+    }
+    </div>
+
+    <button @onclick="() => AddKit() ">Create</button>
+}
+else
+{
+    <message class="validation-message">You need to log in to create a kit</message>
+}
+
+
+<div style="flex: 1" class="nav-item justify-content-end">
+    <NavLink class="nav-link" href="/MyCreations">
+        <botton class="btn btn-secondary">View past creations</botton>
+    </NavLink>
+</div>
 
 @code {
-    private int currentCount = 0;
+    private ClaimsPrincipal User;
+    private int userId { get; set; }
+    private string userName { get; set; }
+    private Accessory[] Accessories { get; set; }
+    private Creature[] Creatures { get; set; }
+    private List<KitAccessory> UserAccessories { get; set; }
+    private Creature creature {get;set;}
 
-    private void IncrementCount()
+    protected override async Task OnInitializedAsync()
     {
-        currentCount++;
+        Accessories = new Accessory[] { };
+        Creatures = new Creature[] {};
+        UserAccessories = new();
+        creature = new Creature { Creaturename = ""};
+        var context = dbcontext.CreateDbContext();
+
+
+        User = _httpContextAccessor.HttpContext.User;
+        var GoogleUser = User.Identities.FirstOrDefault();
+        if (GoogleUser.IsAuthenticated)
+        {
+            userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                );
+            userName = GoogleUser.FindFirst(ClaimTypes.Name).Value;
+        }
+        if(userRoleService.IsAuthenticated)
+        {
+            Accessories = await context.Accessories.ToArrayAsync();
+            Creatures = await context.Creatures.ToArrayAsync();
+            creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
+        }
     }
+
+    private void AddAccessory (int kitID)
+    {
+        bool added = false;
+        foreach(var ka in UserAccessories)
+        {
+            if (ka.AccId == kitID)
+            {
+                ka.Qty = ka.Qty + 1;
+                added = true;
+            }
+        }
+        if(added != true)
+        {
+
+            UserAccessories.Add(
+                new KitAccessory()
+                    {
+                        AccId = kitID,
+                        Qty = 1,
+                        Acc = Accessories.Where(a => a.Id == kitID).FirstOrDefault()
+                     }
+            );
+        }
+    }
+
+    private void RemoveAccessory(int kitID)
+    {
+        KitAccessory kItToRemove = new();
+        foreach (var ka in UserAccessories)
+        {
+            if (ka.AccId == kitID && ka.Qty > 1)
+            {
+                ka.Qty = ka.Qty - 1;
+                break;
+            }
+            else if (ka.AccId == kitID)
+            {
+                kItToRemove = ka;
+                break;
+            }
+        }
+        UserAccessories.Remove(kItToRemove);
+    }
+
+    private async Task AddKit()
+    {
+        var context = await dbcontext.CreateDbContextAsync();
+        int newKitID = context.Kits.Max(c => c.Id) + 1;
+        Kit kitToAdd = new Kit
+            {
+                Id = newKitID,
+                KitAccessories = UserAccessories,
+                Kitname = $"{userName}'s Creation",
+                ThumbnailPath = "/Images/FlyingDinousary.png",
+                CreatorId = userId,
+                Shoulddisplay = false
+            };
+        await context.Kits.AddAsync(kitToAdd);
+        await context.SaveChangesAsync();
+    }
+
 }
