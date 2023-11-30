@@ -7,6 +7,11 @@
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div style="flex: 1" class="nav-item justify-content-end">
+    <NavLink class="nav-link" href="/MyCreations">
+        View past creations
+    </NavLink>
+</div>
 
 @code {
     private int currentCount = 0;
