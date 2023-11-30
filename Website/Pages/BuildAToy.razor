@@ -18,10 +18,10 @@
 {
     <label for="kitCreature">Choose a Creature:</label>
 
-    <select @bind="creature" name="kitCreature" id="kitCreature">
+    <select @bind="creatureid" name="kitCreature" id="kitCreature">
         @foreach(var c in Creatures)
         {
-            <option value="@c">@c.Creaturename</option>
+            <option value="@c.Id">@c.Creaturename</option>
         }
     </select>
 
@@ -62,7 +62,9 @@ else
     private Accessory[] Accessories { get; set; }
     private Creature[] Creatures { get; set; }
     private List<KitAccessory> UserAccessories { get; set; }
-    private Creature creature {get;set;}
+    private Creature? creature {get;set;}
+    private string creatureid { get; set; }
+    private Kit[] Creations { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,6 +73,8 @@ else
         UserAccessories = new();
         creature = new Creature { Creaturename = ""};
         var context = dbcontext.CreateDbContext();
+        Creations = new Kit[] { };
+
 
 
         User = _httpContextAccessor.HttpContext.User;
@@ -88,6 +92,10 @@ else
             Accessories = await context.Accessories.ToArrayAsync();
             Creatures = await context.Creatures.ToArrayAsync();
             creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
+            Creations = await context.Kits.Where(k => k.CreatorId == userId)
+                                          .Include(k => k.KitAccessories)
+                                          .ThenInclude(k => k.Acc)
+                                          .ToArrayAsync();
         }
     }
 
@@ -139,16 +147,30 @@ else
     {
         var context = await dbcontext.CreateDbContextAsync();
         int newKitID = context.Kits.Max(c => c.Id) + 1;
+        int newKitAccID = context.KitAccessories.Max(k => k.Id) + 1;
         Kit kitToAdd = new Kit
             {
                 Id = newKitID,
-                KitAccessories = UserAccessories,
-                Kitname = $"{userName}'s Creation",
+                Kitname = $"{userName}'s Creation{Creatures.Length + 1}",
                 ThumbnailPath = "/Images/FlyingDinousary.png",
                 CreatorId = userId,
-                Shoulddisplay = false
+                Shoulddisplay = false,
+                CreatureId = int.Parse(creatureid)
             };
         await context.Kits.AddAsync(kitToAdd);
+
+        for (int i = 0; i < UserAccessories.Count; i++)
+        {
+            KitAccessory toAdd = new KitAccessory
+                {
+                    AccId = UserAccessories[i].AccId,
+                    Id = newKitAccID + i,
+                    KitId = newKitID,
+                    Qty = UserAccessories[i].Qty
+
+                };
+            await context.KitAccessories.AddAsync(toAdd);
+        }
         await context.SaveChangesAsync();
     }
 
