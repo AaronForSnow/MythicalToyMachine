@@ -70,7 +70,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = dbcontext.CreateDbContext();
-        Kits = await context.Kits
+        Kits = await context.Kits.Where(k => k.Shoulddisplay == true)
                             .Include(C => C.Creature)
                             .Include(k => k.KitAccessories)
                             .ThenInclude(ka => ka.Acc)
