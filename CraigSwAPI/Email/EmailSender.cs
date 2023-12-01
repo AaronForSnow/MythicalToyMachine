@@ -1,6 +1,7 @@
-﻿using CraigSwAPI.Email;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
+
+namespace CraigSwAPI.Email;
 
 public class EmailSender : IEmailSender
 {

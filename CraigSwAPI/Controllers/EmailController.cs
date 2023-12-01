@@ -1,7 +1,7 @@
-﻿using CraigSwAPI.Email;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 
+namespace CraigSwAPI.Email;
 
 [ApiController]
 [Route("email")]

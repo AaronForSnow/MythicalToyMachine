@@ -1,0 +1,10 @@
+﻿@CraigSwAPI_HostAddress = https://localhost:7280
+
+POST {{CraigSwAPI_HostAddress}}/email?email=TheNewDorian21%40gmail.com&subject=This_is_the_best_test_ever&message=What_a_greatday
+
+###
+ {
+   email="TheNewDorian21@gmail.com",
+   subject="This is the best test ever",
+   message="What a great day"
+ };

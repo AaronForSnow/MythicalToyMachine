@@ -7,7 +7,9 @@
 @using System.Security.Claims;
 @using Microsoft.AspNetCore.Http
 @using MythicalToyMachine.Data.DTOs;
-<!--  @using CraigSwAPI.Email; -->
+@using System.Text.Json;
+@using System.Text;
+@using Newtonsoft.Json;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
@@ -46,9 +48,9 @@
         <div>Cart Total: $@TotalPrice</div>
     }
 
-    @* <Button @onclick=@Checkout()>Checkout</Button> *@
+    <Button @onclick=@Checkout>Checkout</Button>
 
-    <Alert>@Message</Alert>
+   @*  <Alert>@Message</Alert> *@
 }
 else
 {
@@ -148,31 +150,43 @@ else
         //List
 
         //call the API methods that have to do with sending the emails
-        string userEmail = User.FindFirstValue(ClaimTypes.Email);
-        string subject = "New Order From Tailored Toys";
-        string message = await GetEmailDetails();
-        SendEmailAsync( email, string subject, string message)
+        var emailToSerialize = new EmailInfoDto()
+            {
+                Email = User.FindFirstValue(ClaimTypes.Email),
+                Subject = "New Order From Tailored Toys",
+                Message = await GetEmailDetails()
+            };
+            string serializedEmail = JsonConvert.SerializeObject(emailToSerialize);
+        // var serializedEmail = JsonSerializer.Serialize(emailToSerialize);
+        var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
+        var response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", requestToSend);
+        response.EnsureSuccessStatusCode();
+
+        //var request = new HttpRequestMessage(HttpMethod.Post, "https://CraigSwAPI.azurewebsites.net/email");
+
+
 
     }
 
     public async Task<string> GetEmailDetails()
     {
-        string returnString = $"Order number {requestId}:\n";
-        var context = dbcontext.CreateDbContext();
-        IEnumerable<RequestItem> requestItems = await context.RequestItems
-                                            .Include(r => r.Request)
-                                            .Where(r => r.Id == requestId)
-                                            .ToListAsync();
+        return $"Hello this is a test email send at {DateTime.Now}!";
+        // string returnString = $"Order number {requestId}:\n";
+        // var context = dbcontext.CreateDbContext();
+        // IEnumerable<RequestItem> requestItems = await context.RequestItems
+        //                                     .Include(r => r.Request)
+        //                                     .Where(r => r.Id == requestId)
+        //                                     .ToListAsync();
 
-        foreach (var ri in requestItems)
-        {
-            returnString += @"
-                            {ri.Kit.Kitname}
-                                            
+        //         foreach (var ri in requestItems)
+        //         {
+        //             returnString += @"
+        //                             {ri.Kit.Kitname}
 
 
-";
-        }
+
+        // ";
+        //         }
         //.Where(r => r.Id == requestId)
         //foreach item in the db that corresponds to this order, add a line to the string
     }
@@ -183,8 +197,9 @@ else
         //make a new DBContext
         var context = dbcontext.CreateDbContext();
         //make a new request
-        var newRequest = new RequestDto()
+        var newRequest = new Request()
             {
+                Id = 108,
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };
@@ -207,7 +222,7 @@ else
 
         //add new line to requestitem
 
-        context.Add(new RequestItemDto()
+        context.Add(new RequestItem()
         {
             RequestId = requestID,
             KitId = item.KitId,
