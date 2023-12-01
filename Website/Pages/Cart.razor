@@ -170,8 +170,8 @@ else
             var serializedJson = JsonConvert.SerializeObject(emailModel);
             var content = new StringContent(serializedJson, Encoding.UTF8, "application/json");
 
-            //HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
-            HttpResponseMessage response = await Http.PostAsync("https://localhost:7280/email", content);
+            HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
+            //HttpResponseMessage response = await Http.PostAsync("https://localhost:7280/email", content);
 
 
             if (response.IsSuccessStatusCode)
