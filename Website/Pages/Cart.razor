@@ -134,7 +134,7 @@ else
         }
         else
         {
-            //await AddCartToRequest(); //UNCOMMENT THIS WHEN DONE TESTING SENDCONFIRMATIONEMAIL
+            await AddCartToRequest(); 
 
             //TODO: figure out how to check for success above
 
@@ -157,7 +157,7 @@ else
             var serializedJson = JsonConvert.SerializeObject(emailModel);
             var content = new StringContent(serializedJson, Encoding.UTF8, "application/json");
 
-            // HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
+            //HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
             HttpResponseMessage response = await Http.PostAsync("https://localhost:7280/email", content);
 
 
@@ -181,29 +181,6 @@ else
     }
 
 
-
-    // public async Task SendConfirmationEmail()
-    // {
-    //     //List
-
-    //     //call the API methods that have to do with sending the emails
-    //     var emailToSerialize = new EmailInfoDto()
-    //         {
-    //             Email = User.FindFirstValue(ClaimTypes.Email),
-    //             Subject = "New Order From Tailored Toys",
-    //             Message = await GetEmailDetails()
-    //         };
-    //         string serializedEmail = JsonConvert.SerializeObject(emailToSerialize);
-    //     // var serializedEmail = JsonSerializer.Serialize(emailToSerialize);
-    //     var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
-    //     var response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", requestToSend);
-    //     response.EnsureSuccessStatusCode();
-
-    //     //var request = new HttpRequestMessage(HttpMethod.Post, "https://CraigSwAPI.azurewebsites.net/email");
-
-
-
-    // }
 
     public async Task<string> GetEmailDetails()
     {
@@ -236,7 +213,7 @@ else
         //make a new request
         var newRequest = new Request()
             {
-                Id = 130,
+                Id = 200, //TODO: Find a way to make this automatically add ID
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };
