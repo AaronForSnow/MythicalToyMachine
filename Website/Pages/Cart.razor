@@ -14,6 +14,7 @@
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
+@inject NavigationManager navigationManager
 
 <h3>Cart</h3>
 
@@ -148,7 +149,8 @@ else
             string message = await GetEmailDetails();
             await SendEmail(email, subject, message);
             //TODO: Erase the cart for that customer
-            //TODO: redirect user to "Order placed" page. 
+            //TODO: redirect user to "Order placed" page.
+            navigationManager.NavigateTo("/orderplaced");
         }
     }
 

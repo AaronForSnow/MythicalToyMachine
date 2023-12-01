@@ -1,0 +1,13 @@
+﻿@page "/orderplaced"
+@inject NavigationManager navigationManager
+<h3>OrderPlaced</h3>
+
+
+<p>Your order has been placed! Please check your email for details.
+    <br/>
+    Please click <button class="button" @onclick="@(() => navigationManager.NavigateTo("/"))">here</button> to return to the home page.</p>
+
+
+@code {
+    
+}
