@@ -6,10 +6,15 @@
 @using Microsoft.AspNetCore.Authorization;
 @using System.Security.Claims;
 @using Microsoft.AspNetCore.Http
+@using MythicalToyMachine.Data.DTOs;
+@using System.Text.Json;
+@using System.Text;
+@using Newtonsoft.Json;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
+@inject NavigationManager navigationManager
 
 <h3>Cart</h3>
 
@@ -35,14 +40,20 @@
                         }
                     </ul>
                     <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary">Remove</a>
-                    <a> Price: $@CalulatePrice(item.Id)</a>
-                </div>
+                    <p>Quantity: @item.Quantity</p>
+                    <a>Individual Price: $@CalulatePrice(item.Id)</a>
+                    <p>Total price: @CalculateTotalPrice(item.Quantity, item.Id) </p>
+                </div>/
             </div>
 
         
         }   
         <div>Cart Total: $@TotalPrice</div>
     }
+
+    <Button @onclick=@Checkout>Checkout</Button>
+
+   @*  <Alert>@Message</Alert> *@
 }
 else
 {
@@ -51,10 +62,12 @@ else
 
 
 @code {
+    string Message = "";
     private ClaimsPrincipal User;
     CartItem[] items { get; set; }
     private decimal TotalPrice { get; set; } 
     private int userId {get; set;}
+    private int requestId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,6 +97,9 @@ else
             }
         }
     }
+    private decimal CalculateTotalPrice(int qty, int itemid) => qty * CalulatePrice(itemid);
+
+
     private decimal CalulatePrice(int itemid)
     {
         var CalcKit = items.Where(k => k.Id == itemid).FirstOrDefault();
@@ -113,5 +129,139 @@ else
         {
             string ErrorMessage = e.Message;
         }
+    }
+
+    public async Task Checkout()
+    {
+        if (items is null)
+        {
+            Message = "Please add an item to your cart before attempting to checkout";
+            return;
+        }
+        else
+        {
+            await AddCartToRequest(); //TODO: UNCOMMENT THIS WHEN DONE TESTING EMAILS
+
+            //TODO: figure out how to check for success above
+            //If saved to DB, put that data in an email and send a copy to Hannah and the customer. 
+            string email = User.FindFirstValue(ClaimTypes.Email);
+            string subject = "New Order From Tailored Toys";
+            string message = await GetEmailDetails();
+            await SendEmail(email, subject, message);
+            //TODO: Erase the cart for that customer
+            //TODO: redirect user to "Order placed" page.
+            navigationManager.NavigateTo("/orderplaced");
+        }
+    }
+
+    private EmailInfoDto emailModel = new();
+
+    private async Task SendEmail(string email, string subject, string message)
+    {
+        try
+        {
+            //TODO: change email address to that of the client and Hannah
+            //TODO: CHange the subject and message to be related to the specific order
+
+            emailModel.Email = email;
+            emailModel.Subject = subject;
+            emailModel.Message = message;
+
+            var serializedJson = JsonConvert.SerializeObject(emailModel);
+            var content = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+
+            //HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
+            HttpResponseMessage response = await Http.PostAsync("https://localhost:7280/email", content);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Email sent successfully!");
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+
+                // Log the content of the response for more details
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response Content: {responseContent}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+
+
+
+    public async Task<string> GetEmailDetails()
+    {
+        //return $"Hello this is a test email send at {DateTime.Now}!";
+        string returnString = $"Order number {requestId}:\n" + 
+                                "KitName, Quantity, IndividualPrice, TotalPrice\n";
+        var context = dbcontext.CreateDbContext();
+        IEnumerable<RequestItem> requestItems = await context.RequestItems
+                                            .Include(r => r.Request)
+                                            .Include(k => k.Kit)
+                                            .Where(r => r.Request.Id == requestId)
+                                            .ToListAsync();
+
+        if (requestItems is not null)
+        {
+
+            foreach (var ri in requestItems)
+            {
+                returnString += $"{ri.Kit.Kitname}, {ri.Quantity}, {ri.RequestPrice}, {ri.RequestPrice * ri.Quantity}\n";
+            }
+        }
+        else
+        {
+            returnString = "There were no items in the database. Shame on the programmers for even letting you click that button in the first place.";
+        }
+        return returnString;
+    }
+
+    public async Task AddCartToRequest()
+    {
+        //TODO: as we go thorugh the list, add items to list so we can aceess it later for the email
+        //make a new DBContext
+        var context = dbcontext.CreateDbContext();
+        //make a new request
+        var newRequest = new Request()
+            {
+                Id = context.Requests.Max(c => c.Id) + 1,
+                CustomerId = userId,
+                Requestdate = DateTime.Now
+            };
+        var addedRequest = context.Add(newRequest);
+        await context.SaveChangesAsync();
+        requestId = newRequest.Id;
+        await context.DisposeAsync();
+
+        //add each item
+        foreach (var item in items)
+        {
+            await AddCartToRequestItem(item, requestId);
+        }
+    }
+
+    public async Task AddCartToRequestItem(CartItem item, int requestID)
+    {
+        //make a new DBContext
+        var context = dbcontext.CreateDbContext();
+
+        //add new line to requestitem
+
+        context.Add(new RequestItem()
+        {
+            RequestId = requestID,
+            KitId = item.KitId,
+            Quantity = item.Quantity,
+            RequestPrice = CalulatePrice(item.Id)
+        });
+
+        await context.SaveChangesAsync(); 
+
     }
 }
