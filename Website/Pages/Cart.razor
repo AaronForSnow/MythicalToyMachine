@@ -134,8 +134,7 @@ else
         }
         else
         {
-            await AddCartToRequest();
-            //start with purchase, purchaseitem, 
+            //await AddCartToRequest(); //UNCOMMENT THIS WHEN DONE TESTING SENDCONFIRMATIONEMAIL
 
             //TODO: figure out how to check for success above
 
@@ -145,28 +144,66 @@ else
         }
     }
 
-    public async Task SendConfirmationEmail()
+    private EmailInfoDto emailModel = new();
+
+    private async Task SendConfirmationEmail()
     {
-        //List
+        try
+        {
+            emailModel.Email = "thenewdorian21@gmail.com";
+            emailModel.Subject = "Hello test";
+            emailModel.Message = $"Testing testing on {DateTime.Now}.";
 
-        //call the API methods that have to do with sending the emails
-        var emailToSerialize = new EmailInfoDto()
+            var serializedJson = JsonConvert.SerializeObject(emailModel);
+            var content = new StringContent(serializedJson, Encoding.UTF8, "application/json");
+
+            // HttpResponseMessage response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", content);
+            HttpResponseMessage response = await Http.PostAsync("https://localhost:7280/email", content);
+
+
+            if (response.IsSuccessStatusCode)
             {
-                Email = User.FindFirstValue(ClaimTypes.Email),
-                Subject = "New Order From Tailored Toys",
-                Message = await GetEmailDetails()
-            };
-            string serializedEmail = JsonConvert.SerializeObject(emailToSerialize);
-        // var serializedEmail = JsonSerializer.Serialize(emailToSerialize);
-        var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
-        var response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", requestToSend);
-        response.EnsureSuccessStatusCode();
+                Console.WriteLine("Email sent successfully!");
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
 
-        //var request = new HttpRequestMessage(HttpMethod.Post, "https://CraigSwAPI.azurewebsites.net/email");
-
-
-
+                // Log the content of the response for more details
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response Content: {responseContent}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
     }
+
+
+
+    // public async Task SendConfirmationEmail()
+    // {
+    //     //List
+
+    //     //call the API methods that have to do with sending the emails
+    //     var emailToSerialize = new EmailInfoDto()
+    //         {
+    //             Email = User.FindFirstValue(ClaimTypes.Email),
+    //             Subject = "New Order From Tailored Toys",
+    //             Message = await GetEmailDetails()
+    //         };
+    //         string serializedEmail = JsonConvert.SerializeObject(emailToSerialize);
+    //     // var serializedEmail = JsonSerializer.Serialize(emailToSerialize);
+    //     var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
+    //     var response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", requestToSend);
+    //     response.EnsureSuccessStatusCode();
+
+    //     //var request = new HttpRequestMessage(HttpMethod.Post, "https://CraigSwAPI.azurewebsites.net/email");
+
+
+
+    // }
 
     public async Task<string> GetEmailDetails()
     {
@@ -199,7 +236,7 @@ else
         //make a new request
         var newRequest = new Request()
             {
-                Id = 108,
+                Id = 130,
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };

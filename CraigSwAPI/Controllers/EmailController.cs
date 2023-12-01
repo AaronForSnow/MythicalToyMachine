@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using MythicalToyMachine.Data.DTOs;
 
 namespace CraigSwAPI.Email;
 
@@ -15,9 +15,15 @@ public class EmailController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(string email, string subject, string message)
+    public async Task<IActionResult> SendEmail([FromBody] EmailInfoDto model)
     {
-        await emailSender.SendEmailAsync(email, subject, message);
+        if (model == null || !ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        await emailSender.SendEmailAsync(model.Email, model.Subject, model.Message);
+
         return Ok();
     }
 }
