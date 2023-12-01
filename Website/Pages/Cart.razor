@@ -134,25 +134,31 @@ else
         }
         else
         {
-            await AddCartToRequest(); 
+            await AddCartToRequest(); //TODO: UNCOMMENT THIS WHEN DONE TESTING EMAILS
 
             //TODO: figure out how to check for success above
-
             //If saved to DB, put that data in an email and send a copy to Hannah and the customer. 
-            await SendConfirmationEmail();
-            //redirect user to "Order placed" page. 
+            string email = User.FindFirstValue(ClaimTypes.Email);
+            string subject = "New Order From Tailored Toys";
+            string message = await GetEmailDetails();
+            await SendEmail(email, subject, message);
+            //TODO: Erase the cart for that customer
+            //TODO: redirect user to "Order placed" page. 
         }
     }
 
     private EmailInfoDto emailModel = new();
 
-    private async Task SendConfirmationEmail()
+    private async Task SendEmail(string email, string subject, string message)
     {
         try
         {
-            emailModel.Email = "thenewdorian21@gmail.com";
-            emailModel.Subject = "Hello test";
-            emailModel.Message = $"Testing testing on {DateTime.Now}.";
+            //TODO: change email address to that of the client and Hannah
+            //TODO: CHange the subject and message to be related to the specific order
+
+            emailModel.Email = email;
+            emailModel.Subject = subject;
+            emailModel.Message = message;
 
             var serializedJson = JsonConvert.SerializeObject(emailModel);
             var content = new StringContent(serializedJson, Encoding.UTF8, "application/json");
@@ -184,25 +190,29 @@ else
 
     public async Task<string> GetEmailDetails()
     {
-        return $"Hello this is a test email send at {DateTime.Now}!";
-        // string returnString = $"Order number {requestId}:\n";
-        // var context = dbcontext.CreateDbContext();
-        // IEnumerable<RequestItem> requestItems = await context.RequestItems
-        //                                     .Include(r => r.Request)
-        //                                     .Where(r => r.Id == requestId)
-        //                                     .ToListAsync();
+        //return $"Hello this is a test email send at {DateTime.Now}!";
+        string returnString = $"Order number {requestId}:\n" + 
+                                "KitName, Quantity, IndividualPrice, TotalPrice\n";
+        var context = dbcontext.CreateDbContext();
+        IEnumerable<RequestItem> requestItems = await context.RequestItems
+                                            .Include(r => r.Request)
+                                            .Include(k => k.Kit)
+                                            .Where(r => r.Request.Id == requestId)
+                                            .ToListAsync();
 
-        //         foreach (var ri in requestItems)
-        //         {
-        //             returnString += @"
-        //                             {ri.Kit.Kitname}
+        if (requestItems is not null)
+        {
 
-
-
-        // ";
-        //         }
-        //.Where(r => r.Id == requestId)
-        //foreach item in the db that corresponds to this order, add a line to the string
+            foreach (var ri in requestItems)
+            {
+                returnString += $"{ri.Kit.Kitname}, {ri.Quantity}, {ri.RequestPrice}, {ri.RequestPrice * ri.Quantity}\n";
+            }
+        }
+        else
+        {
+            returnString = "There were no items in the database. Shame on the programmers for even letting you click that button in the first place.";
+        }
+        return returnString;
     }
 
     public async Task AddCartToRequest()
@@ -213,7 +223,7 @@ else
         //make a new request
         var newRequest = new Request()
             {
-                Id = 200, //TODO: Find a way to make this automatically add ID
+                Id = 206, //TODO: Find a way to make this automatically add ID
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };
