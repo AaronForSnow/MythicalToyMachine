@@ -158,8 +158,8 @@ else
             };
             string serializedEmail = JsonConvert.SerializeObject(emailToSerialize);
         // var serializedEmail = JsonSerializer.Serialize(emailToSerialize);
-        var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
-        var response = await Http.PostAsync("https://CraigSwAPI.azurewebsites.net/email", requestToSend);
+        //var requestToSend = new StringContent(serializedEmail, Encoding.UTF8, "application/json");
+        var response = await Http.PostAsJsonAsync("https://CraigSwAPI.azurewebsites.net/email", serializedEmail);
         response.EnsureSuccessStatusCode();
 
         //var request = new HttpRequestMessage(HttpMethod.Post, "https://CraigSwAPI.azurewebsites.net/email");
@@ -199,7 +199,7 @@ else
         //make a new request
         var newRequest = new Request()
             {
-                Id = 108,
+                Id = 111,
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };
