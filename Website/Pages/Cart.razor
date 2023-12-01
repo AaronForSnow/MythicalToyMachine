@@ -39,7 +39,9 @@
                         }
                     </ul>
                     <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary">Remove</a>
-                    <a> Price: $@CalulatePrice(item.Id)</a>
+                    <p>Quantity: @item.Quantity</p>
+                    <a>Individual Price: $@CalulatePrice(item.Id)</a>
+                    <p>Total price: @CalculateTotalPrice(item.Quantity, item.Id) </p>
                 </div>/
             </div>
 
@@ -94,6 +96,9 @@ else
             }
         }
     }
+    private decimal CalculateTotalPrice(int qty, int itemid) => qty * CalulatePrice(itemid);
+
+
     private decimal CalulatePrice(int itemid)
     {
         var CalcKit = items.Where(k => k.Id == itemid).FirstOrDefault();
@@ -223,7 +228,7 @@ else
         //make a new request
         var newRequest = new Request()
             {
-                Id = 206, //TODO: Find a way to make this automatically add ID
+                Id = context.Requests.Max(c => c.Id) + 1,
                 CustomerId = userId,
                 Requestdate = DateTime.Now
             };

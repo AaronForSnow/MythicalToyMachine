@@ -32,10 +32,10 @@
                         }
                     </ul>
                     <div class="form-outline">  @* style="width: 22rem;">  *@  
-                        <input min="1" max="20" type="number" id="typeNumber" class="form-control" />  @*TODO: Get the quantity for a cart item here*@  
-                        <label class="form-label" for="typeNumber">Quantity</label>
+                        <input min="1" max="20" for="typeNumber" type="number" id="typeNumber" class="form-control" @bind="Qty" /> @* qty is bound here, not on the label  *@
+                        @* <label class="form-label" for="typeNumber" type="number" min="1" @bind="Qty">Quantity</label> *@
                     </div>
-                        <a @onclick="() => AttemptAddToCart(k.Id, 1)" class="btn btn-primary">Add To cart</a> @*TODO: pass it in here*@
+                        <a @onclick="() => AttemptAddToCart(k.Id, Qty)" class="btn btn-primary">Add To cart</a> @*TODO: pass it in here*@
                         <a> Price: $@CalulatePrice(k.Id)</a>
                     </div>
                 </div>
@@ -66,6 +66,7 @@
     bool NotLoggedIn = false;
     string? SuccessMessage { get; set; }
     string? ErrorMessage { get; set; }
+    int Qty = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,7 +78,7 @@
                             .ToArrayAsync();
 
     }
-    private async Task AttemptAddToCart(int kitId, int? quantity)
+    private async Task AttemptAddToCart(int kitId, int quantity)
     {
         int userId;
         try
@@ -130,7 +131,7 @@
         }
         return price;
     }
-    private async Task AddToCart(int userid, int kitid, int? Qty = null)
+    private async Task AddToCart(int userid, int kitid, int Qty)
     {
         //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
         var context = await dbcontext.CreateDbContextAsync();
@@ -139,7 +140,7 @@
                 Id = context.CartItems.Max(c => c.Id) + 1,
                 CustomerId = userid,
                 KitId = kitid,
-                Quantity = Qty ?? 1,
+                Quantity = Qty,
                 SaveForLater = false
             };
 
