@@ -199,7 +199,11 @@ else
     {
         //return $"Hello this is a test email send at {DateTime.Now}!";
         decimal? grandTotal = 0;
-        string returnString = $"Order number {requestId} placed on {DateTime.Now}:\n" + 
+        DateTime utcNow = DateTime.UtcNow;
+        TimeZoneInfo localTimeZone = TimeZoneInfo.Local;
+        DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(utcNow, localTimeZone);
+
+        string returnString = $"Order number {requestId} placed on {localTime}:\n" + 
                                 "KitName, Quantity, IndividualPrice, TotalPrice\n";
         var context = dbcontext.CreateDbContext();
         IEnumerable<RequestItem> requestItems = await context.RequestItems
