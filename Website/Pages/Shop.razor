@@ -31,12 +31,15 @@
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                    <div class="form-outline">  @* style="width: 22rem;">  *@  
-                        <input min="1" max="20" for="typeNumber" type="number" id="typeNumber" class="form-control" @bind="Qty" /> @* qty is bound here, not on the label  *@
-                        @* <label class="form-label" for="typeNumber" type="number" min="1" @bind="Qty">Quantity</label> *@
+                    <div class="form-outline">  
+                        <input min="1" max="20" for="typeNumber" type="number" id="typeNumber" class="form-control" @bind="KitQties[k.Id]" /> 
                     </div>
-                        <a @onclick="() => AttemptAddToCart(k.Id, Qty)" class="btn btn-primary">Add To cart</a> @*TODO: pass it in here*@
-                        <a> Price: $@CalulatePrice(k.Id)</a>
+                        <a @onclick="() => AttemptAddToCart(k.Id, KitQties[k.Id])" class="btn btn-primary">Add To cart</a>
+                        <br/>
+                        <a>Individual Price: $@CalulatePrice(k.Id)</a>
+                        <br/>
+                        <a>Total Price: $@CalculateTotalPrice(KitQties[k.Id], k.Id)</a>
+
                     </div>
                 </div>
             }
@@ -66,7 +69,9 @@
     bool NotLoggedIn = false;
     string? SuccessMessage { get; set; }
     string? ErrorMessage { get; set; }
-    int Qty = 1;
+    Dictionary<int, int> KitQties = new();
+    CartItem[] CartItemsForId { get; set; }
+    int userId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,10 +82,20 @@
                             .ThenInclude(ka => ka.Acc)
                             .ToArrayAsync();
 
+
+
+        foreach(var kit in Kits)
+        {
+            KitQties[kit.Id] = 1;
+        }
+
     }
+
+    private decimal CalculateTotalPrice(int qty, int itemid) => qty * CalulatePrice(itemid);
+
+
     private async Task AttemptAddToCart(int kitId, int quantity)
     {
-        int userId;
         try
         {
             User = _httpContextAccessor.HttpContext.User;
@@ -135,7 +150,18 @@
     {
         //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
         var context = await dbcontext.CreateDbContextAsync();
-        var myNewKit = new CartItem()
+        CartItemsForId = await context.CartItems.Where(i => i.CustomerId == userId)
+                      .Include(k => k.Kit)
+                      .ThenInclude(C => C.Creature)
+                      .Include(k => k.Kit)
+                      .ThenInclude(j => j.KitAccessories)
+                      .ThenInclude(a => a.Acc)
+                      .Where(k => k.Kit.Id == kitid)
+                      .ToArrayAsync();
+
+        if(CartItemsForId is null || CartItemsForId.Length == 0)
+        {
+            var myNewKit = new CartItem()
             {
                 Id = context.CartItems.Max(c => c.Id) + 1,
                 CustomerId = userid,
@@ -144,7 +170,29 @@
                 SaveForLater = false
             };
 
-        context.CartItems.Add(myNewKit);
+            context.CartItems.Add(myNewKit);
+        }
+        else if (CartItemsForId.Length > 1)
+        {
+            int newQuantity = 0;
+            foreach (var item in CartItemsForId)
+            {
+                newQuantity += item.Quantity;
+            }
+            CartItemsForId[0].Quantity = newQuantity;
+
+            context.Update(CartItemsForId[0]);
+
+            for (int i = 1; i < CartItemsForId.Length; i++)
+            {
+                context.Remove(CartItemsForId[i]);
+            }
+        }
+        else //if an item of the same type already exists and we want to update the quantity
+        {
+            CartItemsForId[0].Quantity += Qty;
+            context.Update(CartItemsForId[0]);
+        }
         await context.SaveChangesAsync();
     }
     
