@@ -2,6 +2,11 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: deepskyblue;
+    height: 100vh;
 }
 
 h1:focus {
@@ -66,3 +71,32 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+
+#mainLayout {
+    
+}
+
+#indexButtonMenu {
+   
+}
+
+.index-buttons {
+    border:15px solid;
+    border-color:rgb(255, 255, 255);
+    border-radius:20%;
+    background-color:rgb(219, 141, 141);
+}
+
+.index-button-imgs {
+}
+
+#carouselDiv {
+    margin-top:50px;
+    
+}
+
+.ourcarousel {
+    max-width: 100px;
+}

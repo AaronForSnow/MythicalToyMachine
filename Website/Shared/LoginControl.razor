@@ -10,19 +10,14 @@
 {
     @* <div>@User.FindFirst(ClaimTypes.Email).Value</div> how to get the email.*@
     <img src="@Avatar" />
-    <b>You are logged in as: @GivenName @Surname</b>
-    <a class="ml-md-auto btn btn-primary"
-       href="/Identity/Logout"
-       target="_top">Logout</a>
+<b>Logged in as @GivenName @Surname. Click here to Logout</b>
 }
 else
 {
 
     @* <div class="g-signin2" data-onsuccess="onSignIn"></div> *@
 
-     <a class="ml-md-auto btn btn-primary"
-       href="/Identity/login"
-       target="_top">Login</a> 
+     <b>Login</b> 
 
 
 }
