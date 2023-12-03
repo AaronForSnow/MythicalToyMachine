@@ -82,15 +82,13 @@ a, .btn-link {
    
 }
 
-.index-buttons {
+.container-index-buttons {
     border:15px solid;
     border-color:rgb(255, 255, 255);
     border-radius:20%;
     background-color:rgb(219, 141, 141);
 }
 
-.index-button-imgs {
-}
 
 #carouselDiv {
     margin-top:50px;
