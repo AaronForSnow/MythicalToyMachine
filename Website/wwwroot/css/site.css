@@ -98,3 +98,89 @@ a, .btn-link {
 .ourcarousel {
     max-width: 100px;
 }
+
+
+#flex-container{
+    display:flex;
+}
+
+
+
+.flex-column {
+     
+   /* padding: 20px; 
+    border: 1px solid #ccc; */
+}
+
+    #accessory-column{
+        flex:1;
+    
+        display:flex;
+        align-items:center;
+    }
+
+#center-column {
+    flex: 4;
+    /*background-color:orange;*/
+
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-around;
+}
+    .page-subtitle {
+        flex: 1;
+    }
+
+    .dino-img {
+        flex:5
+    }
+
+    .option-buttons{
+        flex:1;
+        margin:20px;
+    }
+
+
+#colors-column {
+    flex: 1;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+    .color-selection {
+        width: 75px; 
+        height: 75px;
+        margin: 20px;
+    }
+        .red{
+            background-color:red;
+        }
+        .orange{
+            background-color: orange;
+        }
+        .yellow {
+            background-color: yellow;
+        }
+        .green {
+            background-color: green;
+        }
+        .blue{
+            background-color: blue;
+        }
+        .purple {
+            background-color: violet;
+        }
+        #eraser{
+            width:200px;
+        }
+
+.accessory-img {
+    width:200px;
+   height:200px;
+   flex:1;
+}
+
+

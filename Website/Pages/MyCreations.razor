@@ -63,14 +63,14 @@ else
                 GoogleUser.FindFirst(ClaimTypes.Name).Value,
                 GoogleUser.FindFirst(ClaimTypes.Surname).Value
                 );
-        if (userRoleService.IsAuthenticated)
-        {
-            var context = dbcontext.CreateDbContext();
-            Creations = await context.Kits.Where(k => k.CreatorId == userId)
-                                          .Include(k => k.KitAccessories)
-                                          .ThenInclude(k => k.Acc)
-                                          .ToArrayAsync();
-        }
+            if (userRoleService.IsAuthenticated)
+            {
+                var context = dbcontext.CreateDbContext();
+                Creations = await context.Kits.Where(k => k.CreatorId == userId)
+                                              .Include(k => k.KitAccessories)
+                                              .ThenInclude(k => k.Acc)
+                                              .ToArrayAsync();
+            }
         }
      
     }

@@ -13,24 +13,73 @@
 
 <PageTitle>BuildAToy</PageTitle>
 
-<h1>Build A Toy</h1>
 @if (userRoleService.IsAuthenticated)
 {
-    <label for="kitCreature">Choose a Creature:</label>
+    <Div id="flex-container">
+        <Div id="accessory-column" Class="flex-column">
+            <Div Class="accessory-img img-fluid">
+                <img class="img-fluid" src="/Images/Accessories/unicornhorn.png">
+            </Div>
+            <Div Class="accessory-img img-fluid">
+                <img class="img-fluid" src="/Images/Accessories/antlers.png">
+            </Div>
+            <Div Class="accessory-img img-fluid">
+                <img class="img-fluid" src="/Images/Accessories/wing.png">
+            </Div>
+            <Div Class="accessory-img img-fluid">
+                <img class="img-fluid" src="/Images/Accessories/wing-evil.png">
+            </Div>
+            <Div Class="accessory-img img-fluid">
+                <img class="img-fluid" src="/Images/Accessories/js.png">
+            </Div>
+        </Div>
 
-    <select @bind="creatureid" name="kitCreature" id="kitCreature">
+        <div id="center-column" class="flex-column">
+            <div id="page-subtitle img-fluid">
+                <img src="/Images/Accessories/subtitle.png">
+            </div>
+            <div class="dino-img">
+                <img class="img-fluid" src="/Images/Accessories/dino.png">
+            </div>
+            <Div Class="option-buttons">
+                <button class="btn btn-success option-buttons" @onclick="() => AddKit() ">Save</button>
+                <a href="/MyCreations" class="btn btn-secondary option-buttons">View my past creations</a>
+            </Div>
+
+        </div>
+
+        <Div id="colors-column" class="flex-column">
+            <div class="red rounded-circle color-selection"></div>
+            <div class="orange rounded-circle color-selection"></div>
+            <div class="yellow rounded-circle color-selection"></div>
+            <div class="green rounded-circle color-selection"></div>
+            <div class="blue rounded-circle color-selection"></div>
+            <div class="purple rounded-circle color-selection"></div>
+            <img id="eraser" src="/Images/Accessories/eraser.png">
+        </Div>
+
+    </Div>
+
+    
+
+    @*
+
+    
+    <label for="kitCreature">Choose a Creature: </label>
+
+     <select @bind="creatureid" name="kitCreature" id="kitCreature">
         @foreach(var c in Creatures)
         {
             <option value="@c.Id">@c.Creaturename</option>
         }
     </select>
 
-    @foreach(var a in Accessories)
+     @foreach(var a in Accessories)
     {
         <button @onclick="() => AddAccessory(a.Id)">Add @a.Accessoryname</button>
-    }
+    } 
 
-    <div class="Products d-flex flex-row">
+     <div class="Products d-flex flex-row">
     @foreach(var u in UserAccessories)
     {
         <div class="flex-row">
@@ -39,21 +88,17 @@
             <button @onclick="() => RemoveAccessory(u.AccId)">Remove 1</button>
         </div>
     }
-    </div>
+    </div> *@
 
-    <button @onclick="() => AddKit() ">Create</button>
+   
 }
 else
 {
-    <message class="validation-message">You need to log in to create a kit</message>
+    <message class="validation-message">You need to <a class="btn btn-info" href="/identity/login">log in</a> to create a kit</message>
 }
 
 
-<div style="flex: 1" class="nav-item justify-content-end">
-    <NavLink class="nav-link" href="/MyCreations">
-        <botton class="btn btn-secondary">View past creations</botton>
-    </NavLink>
-</div>
+
 
 @code {
     private ClaimsPrincipal User;
