@@ -247,7 +247,7 @@ else
         UserAccessories.Remove(kItToRemove);
     }
 
-    private async Task AddKit()
+    private async Task AddKitAsync()
     {
         var context = await dbcontext.CreateDbContextAsync();
         int newKitID = context.Kits.Max(c => c.Id) + 1;
