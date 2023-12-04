@@ -22,6 +22,18 @@
     else
 
     {
+        @if (SuccessMessage is not null)
+        {
+            <br />
+            <div class="alert alert-success">@SuccessMessage</div>
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <br />
+            <div class="alert alert-danger">@ErrorMessage</div>
+        }
+         <div class="Products d-flex flex-row">
         @foreach (var k in Creations)
         {
             <div class="card" style="width: 18rem;">
@@ -36,8 +48,20 @@
                         }
                     </ul>
                 </div>
-            </div>            
+                <div class="form-outline">
+                    <input min="1" max="20" for="typeNumber" type="number" id="typeNumber" class="form-control" @bind="KitQties[k.Id]" />
+                </div>
+                <a @onclick="() => AttemptAddToCart(k.Id, KitQties[k.Id])" class="btn btn-primary">Add To cart</a>
+                <br />
+                <a @onclick="() => RemoveItem(k.Id)" class="btn btn-primary">Remove</a>
+                <br />
+                <a>Individual Price: $@CalulatePrice(k.Id)</a>
+                <br />
+                <a>Total Price: $@CalculateTotalPrice(KitQties[k.Id], k.Id)</a>
+
+            </div>          
         }
+        </div>
 
     }
 }
@@ -50,7 +74,11 @@ else
 @code {
     private ClaimsPrincipal User;
     private Kit[] Creations { get; set; }
-    private int userId { get; set; }
+    string? SuccessMessage { get; set; }
+    string? ErrorMessage { get; set; }
+    Dictionary<int, int> KitQties = new();
+    CartItem[] CartItemsForId { get; set; }
+    int userId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,12 +95,166 @@ else
             {
                 var context = dbcontext.CreateDbContext();
                 Creations = await context.Kits.Where(k => k.CreatorId == userId)
+                                              .Include(C => C.Creature)
                                               .Include(k => k.KitAccessories)
                                               .ThenInclude(k => k.Acc)
                                               .ToArrayAsync();
+                foreach (var kit in Creations)
+                {
+                    KitQties[kit.Id] = 1;
+                }
+
             }
         }
-     
+
+
+    }
+    private decimal CalculateTotalPrice(int qty, int itemid) => qty * CalulatePrice(itemid);
+
+
+    private async Task AttemptAddToCart(int kitId, int quantity)
+    {
+        try
+        {
+            User = _httpContextAccessor.HttpContext.User;
+            var GoogleUser = User.Identities.FirstOrDefault();
+            if (GoogleUser.IsAuthenticated)
+            {
+                userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
+
+            }
+            else
+            {
+                SuccessMessage = null;
+                ErrorMessage = "You need to sign in first in order to add to cart!";
+                return;
+            }
+
+
+            if (userRoleService.IsAuthenticated)
+            {
+                await AddToCart(userId, kitId, quantity);
+                SuccessMessage = "Succesfully added item to cart!";
+                ErrorMessage = null;
+            }
+
+
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+
+    private decimal CalulatePrice(int kitid)
+    {
+        var CalcKit = Creations.Where(k => k.Id == kitid).FirstOrDefault();
+        decimal price = 0;
+        if (CalcKit is not null)
+        {
+            foreach (var a in CalcKit.KitAccessories)
+            {
+                price += a.Acc.Price ?? 0;
+            }
+            price += CalcKit.Creature.Suggestedprice ?? 0;
+        }
+        return price;
+    }
+
+    private async Task AddToCart(int userid, int kitid, int Qty)
+    {
+        //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
+        var context = await dbcontext.CreateDbContextAsync();
+        CartItemsForId = await context.CartItems.Where(i => i.CustomerId == userId)
+                      .Include(k => k.Kit)
+                      .ThenInclude(C => C.Creature)
+                      .Include(k => k.Kit)
+                      .ThenInclude(j => j.KitAccessories)
+                      .ThenInclude(a => a.Acc)
+                      .Where(k => k.Kit.Id == kitid)
+                      .ToArrayAsync();
+
+        if (CartItemsForId is null || CartItemsForId.Length == 0)
+        {
+            var myNewKit = new CartItem()
+                {
+                    Id = context.CartItems.Max(c => c.Id) + 1,
+                    CustomerId = userid,
+                    KitId = kitid,
+                    Quantity = Qty,
+                    SaveForLater = false
+                };
+
+            context.CartItems.Add(myNewKit);
+        }
+        else if (CartItemsForId.Length > 1)
+        {
+            int newQuantity = 0;
+            foreach (var item in CartItemsForId)
+            {
+                newQuantity += item.Quantity;
+            }
+            CartItemsForId[0].Quantity = newQuantity;
+
+            context.Update(CartItemsForId[0]);
+
+            for (int i = 1; i < CartItemsForId.Length; i++)
+            {
+                context.Remove(CartItemsForId[i]);
+            }
+        }
+        else //if an item of the same type already exists and we want to update the quantity
+        {
+            CartItemsForId[0].Quantity += Qty;
+            context.Update(CartItemsForId[0]);
+        }
+        await context.SaveChangesAsync();
+    }
+
+    private async Task RemoveItem(int creationID)
+    {
+        var context = dbcontext.CreateDbContext();
+        var itemToRemove = await context.Kits.Where(i => i.Id == creationID).FirstOrDefaultAsync();
+        var TestKits = await context.KitAccessories.ToListAsync();
+        var KitAccesoriesToRemove = await context.KitAccessories.Where(ka => ka.KitId == creationID).ToListAsync();
+        var CartItemsToRemove = await context.CartItems.Where(ka => ka.KitId == creationID).ToListAsync();
+
+        try
+        {
+            //Remove Kit accesories (if neccesary) first to avoid null foreign key constraint
+
+            if(KitAccesoriesToRemove.Count != 0)
+            {               
+                foreach(var ka in KitAccesoriesToRemove)
+                {
+                    context.KitAccessories.Remove(ka);
+                }
+                await context.SaveChangesAsync();
+            }
+
+            //Remove from CartItems (if necessary) first to avoid null foreign key constraint
+            if (CartItemsToRemove.Count != 0)
+            {
+                foreach (var ci in CartItemsToRemove)
+                {
+                    context.CartItems.Remove(ci);
+                }
+                await context.SaveChangesAsync();
+            }
+
+            //Finally remove item
+            context.Kits.Remove(itemToRemove);
+            await context.SaveChangesAsync();
+
+            await OnInitializedAsync();
+        }
+        catch (Exception e)
+        {
+            string ErrorMessage = e.Message;
+        }
     }
 
 }

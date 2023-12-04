@@ -67,7 +67,6 @@
     Kit[] Kits { get; set; }
     private ClaimsPrincipal User;
     bool? addedToCart { get; set; } = false;
-    bool NotLoggedIn = false;
     string? SuccessMessage { get; set; }
     string? ErrorMessage { get; set; }
     Dictionary<int, int> KitQties = new();
@@ -113,7 +112,6 @@
             {
                 SuccessMessage = null;
                 ErrorMessage = "You need to sign in first in order to add to cart!";
-                NotLoggedIn = true;
                 return;
             }
 
@@ -125,8 +123,6 @@
                 ErrorMessage = null;
                 addedToCart = true;
             }
-
-
         }
         catch (Exception e)
         {
