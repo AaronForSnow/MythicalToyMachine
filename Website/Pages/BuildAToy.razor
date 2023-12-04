@@ -15,26 +15,23 @@
 
 @if (userRoleService.IsAuthenticated)
 {
-
     <body>
-
-       
 
     <Div id="flex-container">
         <Div id="accessory-column" Class="flex-column">
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="unicornhorn">
                 <img class="img-fluid" src="/Images/Accessories/unicornhorn.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="antlers">
                 <img class="img-fluid" src="/Images/Accessories/antlers.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="wing">
                 <img class="img-fluid" src="/Images/Accessories/wing.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="wing-evil">
                 <img class="img-fluid" src="/Images/Accessories/wing-evil.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="js">
                 <img class="img-fluid" src="/Images/Accessories/js.png">
             </Div>
         </Div>
@@ -43,10 +40,10 @@
             <div id="page-subtitle img-fluid">
                 <img src="/Images/Accessories/subtitle.png">
             </div>
-            <div class="dino-img">
-                <canvas id="dinoCanvas" width="600" height="300">
+            <div id="dragContainer" class="dino-img">
+                    <canvas id="dinoCanvas" width="600" height="300">
 
-                </canvas>
+                    </canvas>
             </div>
             <Div Class="option-buttons">
                 <button class="btn btn-success option-buttons" @onclick="() => AddKit() ">Save</button>
@@ -62,7 +59,7 @@
             <div class="green rounded-circle color-selection"></div>
             <div class="blue rounded-circle color-selection"></div>
             <div class="purple rounded-circle color-selection"></div>
-            <img id="eraser" src="/Images/Accessories/eraser.png">
+            <img id="eraser" draggable="false" src="/Images/Accessories/eraser.png">
         </Div>
 
     </Div>
@@ -141,7 +138,7 @@
     }
     </div> *@
 
-        <script src="js/drawingscript.js"></script>
+        <script src="js/drawingscript.js" type="module"></script>
 
     </body>
     
