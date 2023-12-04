@@ -92,9 +92,9 @@ namespace UnitTests
 
         public IEnumerable<string> Roles { get; } = new List<string> { "customer", "admin" };
 
-        public Task LookUpUser(string email, string name, string surname)
+        public async Task<int> LookUpUserAsync(string email, string name, string surname)
         {
-            return Task.CompletedTask;
+            return -1; //ToDO: implement
         }
 
         public void ResetUser()

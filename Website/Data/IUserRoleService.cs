@@ -8,8 +8,9 @@ public interface IUserRoleService
     //
     public bool IsAuthenticated { get; }
     public IEnumerable<string> Roles { get; }
-    public Task<int> LookUpUser(string email, string name, string surname);
+    public Task<int> LookUpUserAsync(string email, string name, string surname);
     public void ResetUser();
+    public Task<Customer> GetUser(string email);
 }
 
 public class UserRoleService : IUserRoleService
@@ -24,8 +25,20 @@ public class UserRoleService : IUserRoleService
 
     private PostgresContext context;
 
-    private List<string> roles = new(); 
-   
+    private List<string> roles = new();
+
+    public async Task<Customer> GetUser(string email)
+    {
+        var lCustomer = new Customer();
+        if (email is not null)
+        {
+            string? eCompare = email;
+            lCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Useremail == email);
+
+        }
+        return lCustomer == null ? null : lCustomer;
+    }
+
 
     public void ResetUser()
     {
@@ -35,7 +48,7 @@ public class UserRoleService : IUserRoleService
         //throw new NotImplementedException();
     }
 
-    public async Task<int> LookUpUser( string email, string name, string surname)
+    public async Task<int> LookUpUserAsync( string email, string name, string surname)
     {
         if (email is not null)
         {
