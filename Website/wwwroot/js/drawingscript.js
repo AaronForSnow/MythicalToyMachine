@@ -43,15 +43,20 @@ img.onload = function () {
         }
     });
 
+let color = 'red';
+
 function drawLine(x1, y1, x2, y2) {
     ctx.beginPath();
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 10;
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
     ctx.closePath();
 }
+
+const selectedColor = document.querySelectorAll('color-selection');
+console.log('colorselects', selectedColor);
 
 
 
@@ -86,41 +91,22 @@ const handleDrop = function (e) {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
-        // Calculate the offset dynamically based on the pig's size
         const offsetX = draggedElement.clientWidth / 2;
         const offsetY = draggedElement.clientHeight * 1.5;
 
-        // Dropped in specified spot
-        draggedElement.style.position = 'absolute';
-        draggedElement.style.left = `${mouseX}px`;
-        draggedElement.style.top = `${mouseY}px`;
+        const copyOfDraggedElement = draggedElement.cloneNode(true); // Create a deep copy of the dragged element
+        copyOfDraggedElement.style.position = 'absolute';
+        copyOfDraggedElement.style.left = `${mouseX - offsetX}px`;
+        copyOfDraggedElement.style.top = `${mouseY - offsetY}px`;
 
         // Explicitly set width and height to maintain consistency
-        draggedElement.style.width = `${draggedElement.clientWidth}px`;
-        draggedElement.style.height = `${draggedElement.clientHeight}px`;
+        copyOfDraggedElement.style.width = `${draggedElement.clientWidth}px`;
+        copyOfDraggedElement.style.height = `${draggedElement.clientHeight}px`;
 
-        let copyOfDraggedElement = draggedElement;
-        draggedElement = null;
         const accessoryColumn = document.getElementById('accessory-column');
-        accessoryColumn.innerHTML = `
-         <Div Class="accessory-img img-fluid" id="unicornhorn">
-                <img class="img-fluid" src="/Images/Accessories/unicornhorn.png">
-            </Div>
-            <Div Class="accessory-img img-fluid" id="antlers">
-                <img class="img-fluid" src="/Images/Accessories/antlers.png">
-            </Div>
-            <Div Class="accessory-img img-fluid" id="wing">
-                <img class="img-fluid" src="/Images/Accessories/wing.png">
-            </Div>
-            <Div Class="accessory-img img-fluid" id="wing-evil">
-                <img class="img-fluid" src="/Images/Accessories/wing-evil.png">
-            </Div>
-            <Div Class="accessory-img img-fluid" id="js">
-                <img class="img-fluid" src="/Images/Accessories/js.png">
-            </Div>
-        `;
         accessoryColumn.appendChild(copyOfDraggedElement);
 
+        draggedElement = null;
         dragContainer.classList.remove('dragOver');
     }
 };
