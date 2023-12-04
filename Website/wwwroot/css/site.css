@@ -123,9 +123,10 @@ a, .btn-link {
     align-items:center;
     justify-content:space-around;
 }
-    .page-subtitle {
-        flex: 1;
-    }
+.page-subtitle {
+    flex: 1;
+    user-select: none;
+}
 
     .dino-img {
         flex:5
@@ -190,6 +191,10 @@ canvas{
     width:200px;
    height:200px;
    flex:1;
+}
+
+.img-fluid{
+    user-select: none;
 }
 
 

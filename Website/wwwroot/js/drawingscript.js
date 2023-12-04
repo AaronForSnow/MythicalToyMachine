@@ -92,14 +92,14 @@ const handleDrop = function (e) {
         const mouseY = e.clientY;
 
         const offsetX = draggedElement.clientWidth / 2;
-        const offsetY = draggedElement.clientHeight * 1.5;
+        const offsetY = (draggedElement.clientHeight * 1.5) - 180;
 
         const copyOfDraggedElement = draggedElement.cloneNode(true); // Create a deep copy of the dragged element
         copyOfDraggedElement.style.position = 'absolute';
         copyOfDraggedElement.style.left = `${mouseX - offsetX}px`;
         copyOfDraggedElement.style.top = `${mouseY - offsetY}px`;
 
-        // Explicitly set width and height to maintain consistency
+        //Explicitly set width and height to maintain consistency
         copyOfDraggedElement.style.width = `${draggedElement.clientWidth}px`;
         copyOfDraggedElement.style.height = `${draggedElement.clientHeight}px`;
 
