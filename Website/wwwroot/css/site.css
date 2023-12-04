@@ -74,13 +74,7 @@ a, .btn-link {
 
 
 
-#mainLayout {
-    
-}
 
-#indexButtonMenu {
-   
-}
 
 .container-index-buttons {
     border:15px solid;
@@ -118,6 +112,7 @@ a, .btn-link {
         display:flex;
         align-items:center;
     }
+    
 
 #center-column {
     flex: 4;
@@ -128,9 +123,10 @@ a, .btn-link {
     align-items:center;
     justify-content:space-around;
 }
-    .page-subtitle {
-        flex: 1;
-    }
+.page-subtitle {
+    flex: 1;
+    user-select: none;
+}
 
     .dino-img {
         flex:5
@@ -140,6 +136,20 @@ a, .btn-link {
         flex:1;
         margin:20px;
     }
+
+#dinoCanvas {
+    /*width: 100%;
+   height:100%;*/
+    /*border: 1px solid red;*/
+}
+canvas{
+    width: 100%;
+    height:100%;
+}
+
+#dragContainer {
+    border: 1px solid red;
+}
 
 
 #colors-column {
@@ -181,6 +191,10 @@ a, .btn-link {
     width:200px;
    height:200px;
    flex:1;
+}
+
+.img-fluid{
+    user-select: none;
 }
 
 

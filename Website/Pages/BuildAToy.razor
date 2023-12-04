@@ -15,31 +15,35 @@
 
 @if (userRoleService.IsAuthenticated)
 {
+    <body>
+
     <Div id="flex-container">
         <Div id="accessory-column" Class="flex-column">
-            <Div Class="accessory-img img-fluid">
+            <Div  Class="accessory-img img-fluid" id="unicornhorn">
                 <img class="img-fluid" src="/Images/Accessories/unicornhorn.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="antlers">
                 <img class="img-fluid" src="/Images/Accessories/antlers.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="wing">
                 <img class="img-fluid" src="/Images/Accessories/wing.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="wing-evil">
                 <img class="img-fluid" src="/Images/Accessories/wing-evil.png">
             </Div>
-            <Div Class="accessory-img img-fluid">
+            <Div Class="accessory-img img-fluid" id="js">
                 <img class="img-fluid" src="/Images/Accessories/js.png">
             </Div>
         </Div>
 
         <div id="center-column" class="flex-column">
             <div id="page-subtitle img-fluid">
-                <img src="/Images/Accessories/subtitle.png">
+                <img style="user-select: none;" src="/Images/Accessories/subtitle.png">
             </div>
-            <div class="dino-img">
-                <img class="img-fluid" src="/Images/Accessories/dino.png">
+            <div id="dragContainer" class="dino-img">
+                    <canvas id="dinoCanvas" width="600" height="300">
+
+                    </canvas>
             </div>
             <Div Class="option-buttons">
                 <button class="btn btn-success option-buttons" @onclick="() => AddKit() ">Save</button>
@@ -55,14 +59,58 @@
             <div class="green rounded-circle color-selection"></div>
             <div class="blue rounded-circle color-selection"></div>
             <div class="purple rounded-circle color-selection"></div>
-            <img id="eraser" src="/Images/Accessories/eraser.png">
+            <img id="eraser" draggable="false" src="/Images/Accessories/eraser.png">
         </Div>
 
     </Div>
 
+
+    
     
 
     @*
+    <img class="img-fluid" src="/Images/Accessories/dino.png">
+
+    var x = 0;
+    var y = 0;
+    var isDrawing = false;
+    const cnv = document.getElementById('canvas');
+    const ctx = cnv.getContext('2d');
+
+    cnv.addEventListener("mousedown", (e) => {
+    x = e.offsetX;
+    y = e.offsetY;
+    isDrawing = true
+    });
+
+    cnv.addEventListener("mousemove", (e) => {
+    if (isDrawing === true) {
+    drawLine(x, y, e.offsetX, e.offsetY);
+    x = e.offsetX;
+    y = e.offsetY;
+    }
+    });
+
+    cnv.addEventListener("mouseup", (e) => {
+    if (isDrawing === true) {
+    drawLine(x, y, e.offsetX, e.offsetY);
+    x = 0;
+    y = 0;
+    isDrawing = false;
+    }
+    });
+
+    function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.strokeStyle = @pencilColor;
+    ctx.lineWidth = 10;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.closePath();
+    }
+
+
 
     
     <label for="kitCreature">Choose a Creature: </label>
@@ -90,12 +138,18 @@
     }
     </div> *@
 
-   
+        <script src="js/drawingscript.js" type="module"></script>
+
+    </body>
+    
 }
 else
 {
     <message class="validation-message">You need to <a class="btn btn-info" href="/identity/login">log in</a> to create a kit</message>
 }
+
+
+
 
 
 
@@ -110,6 +164,10 @@ else
     private Creature? creature {get;set;}
     private string creatureid { get; set; }
     private Kit[] Creations { get; set; }
+    string pencilColor;
+
+    
+    
 
     protected override async Task OnInitializedAsync()
     {
