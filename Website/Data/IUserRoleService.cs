@@ -8,7 +8,7 @@ public interface IUserRoleService
     //
     public bool IsAuthenticated { get; }
     public IEnumerable<string> Roles { get; }
-    public Task<int> LookUpUser(string email, string name, string surname);
+    public Task<int> LookUpUserAsync(string email, string name, string surname);
     public void ResetUser();
 }
 
@@ -35,7 +35,7 @@ public class UserRoleService : IUserRoleService
         //throw new NotImplementedException();
     }
 
-    public async Task<int> LookUpUser( string email, string name, string surname)
+    public async Task<int> LookUpUserAsync( string email, string name, string surname)
     {
         if (email is not null)
         {

@@ -36,7 +36,7 @@ namespace MythicalToyMachine.Pages.Identity
             var GoogleUser = this.User.Identities.FirstOrDefault();
             if (GoogleUser.IsAuthenticated)
             {
-                await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
                     GoogleUser.FindFirst(ClaimTypes.Name).Value,
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
