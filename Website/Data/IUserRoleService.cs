@@ -69,7 +69,7 @@ public class UserRoleService : IUserRoleService
                 newCustomer.CustomerRoleId = 1; //1 = customer 2 = admin
 
                 //add it to database
-                context.Customers.Add(newCustomer);
+                await context.Customers.AddAsync(newCustomer);
                 await context.SaveChangesAsync();
                 lCustomer = newCustomer;
             }
