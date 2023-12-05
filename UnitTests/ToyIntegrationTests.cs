@@ -11,15 +11,15 @@ namespace UnitTests
 {
     public class ToyIntegrationTests : BlazorIntegrationTestContext
     {
-        //[Fact]
-        //public async Task CanMakeComponent()
-        //{
-        //    var cut = RenderComponent<Cart>();
+        [Fact]
+        public async Task CanMakeComponent()
+        {
+            var cut = RenderComponent<Cart>();
 
-        //    cut.Find("a").InnerHtml.Should().Be("You are not logged in. Log in to see your cart.");
+            cut.Find("a").InnerHtml.Should().Be("You are not logged in. Log in to see your cart.");
 
-        //    cut.WaitForElements("tbody tr").Should().HaveCount(5);
-        //}
+            //cut.WaitForElements("tbody tr").Should().HaveCount(5);
+        }
 
         //[Fact]
         //public async Task RenderingTwiceMakes10Forecasts()

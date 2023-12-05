@@ -1,11 +1,12 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     height: 100%;
-    background-color: deepskyblue;
     height: 100vh;
 }
 
@@ -71,8 +72,6 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
-
-
 
 
 
@@ -196,5 +195,153 @@ canvas{
 .img-fluid{
     user-select: none;
 }
+
+/*Carlos*/
+#mainLayout {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+main {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#mainLayout > main > article {
+    width: 100%;
+    padding: 0px !important;
+    margin: 0px !important;
+    border: 0px !important;
+}
+
+#mainLayout > main > article > div.container.mt-5 {
+    width: 100%;
+    max-width: 100% !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    border: 0px !important;
+}
+
+
+#video-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#video-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+#video-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-size: 2em;
+    z-index: 1;
+}
+
+#content-container {
+    padding: 0px; 
+    background-color: #f8f8f8; 
+}
+
+#main-title {
+    transition: color 0.3s ease-in-out;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; 
+    font-size: 2em;
+    color: #333;
+}
+
+#main-title:hover {
+    color: #ff8c00;
+}
+
+#sub-title {
+    transition: color 0.3s ease-in-out;
+    font-family: New Century Schoolbook, TeX Gyre Schola, serif;
+    font-size: 0.7em;
+}
+
+.apple-button {
+    display: inline-block;
+    padding: 12px 24px; 
+    border-radius: 20px; 
+    background-color: #0070c9; 
+    color: #fff; 
+    text-align: center;
+    font-size: 16px; 
+    font-weight: bold; 
+    transition: background-color 0.3s ease-in-out;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.apple-button:hover {
+    background-color: #005689; 
+}
+
+#image-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff; 
+}
+
+#main-title-c {
+    font-size: 2em;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 10px;
+    transition: color 0.3s ease-in-out;
+    color: #333;
+}
+
+#main-title-c:hover {
+    color: #ff8c00;
+}
+
+#sub-title-c {
+    font-size: 1em; 
+    margin-bottom: 20px; 
+}
+
+.apple-button-c {
+    display: inline-block;
+    background-color: #0070c9; 
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.apple-button-c:hover {
+    background-color: #005689; 
+}
+
+
+
 
 
