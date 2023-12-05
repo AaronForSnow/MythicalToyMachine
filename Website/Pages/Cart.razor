@@ -39,7 +39,7 @@
                             <li>@(a.Acc?.Accessoryname)</li>
                         }
                     </ul>
-                    <a @onclick="() => RemoveItemAsync(item.Id)" class="btn btn-primary">Remove</a>
+                    <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary">Remove</a>
                     <p>Quantity: @item.Quantity</p>
                     <a>Individual Price: $@CalulatePrice(item.Id)</a>
                     <p>Total price: $@CalculateTotalPrice(item.Quantity, item.Id) </p>
@@ -76,7 +76,7 @@ else
         var GoogleUser = User.Identities.FirstOrDefault();
         if (GoogleUser.IsAuthenticated)
         {
-            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+            userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
                 GoogleUser.FindFirst(ClaimTypes.Name).Value,
                 GoogleUser.FindFirst(ClaimTypes.Surname).Value
                 );
@@ -115,7 +115,7 @@ else
         return price;
     }
 
-    private async Task RemoveItemAsync(int itemID)
+    private async Task RemoveItem(int itemID)
     {
         var context = dbcontext.CreateDbContext();
         var itemToRemove = await context.CartItems.Where(i => i.Id == itemID).FirstOrDefaultAsync();
@@ -140,14 +140,14 @@ else
         }
         else
         {
-            await AddCartToRequestAsync(); //TODO: UNCOMMENT THIS WHEN DONE TESTING EMAILS
+            await AddCartToRequest(); //TODO: UNCOMMENT THIS WHEN DONE TESTING EMAILS
 
             //TODO: figure out how to check for success above
             //If saved to DB, put that data in an email and send a copy to Hannah and the customer. 
             string email = User.FindFirstValue(ClaimTypes.Email);
             string subject = "New Order From Tailored Toys";
-            string message = await GetEmailDetailsAsync();
-            await SendEmailAsync(email, subject, message);
+            string message = await GetEmailDetails();
+            await SendEmail(email, subject, message);
             //TODO: Erase the cart for that customer
             //TODO: redirect user to "Order placed" page.
             navigationManager.NavigateTo("/orderplaced");
@@ -156,7 +156,7 @@ else
 
     private EmailInfoDto emailModel = new();
 
-    private async Task SendEmailAsync(string email, string subject, string message)
+    private async Task SendEmail(string email, string subject, string message)
     {
         try
         {
@@ -195,7 +195,7 @@ else
 
 
 
-    public async Task<string> GetEmailDetailsAsync()
+    public async Task<string> GetEmailDetails()
     {
         //return $"Hello this is a test email send at {DateTime.Now}!";
         decimal? grandTotal = 0;
@@ -230,7 +230,7 @@ else
         return returnString;
     }
 
-    public async Task AddCartToRequestAsync()
+    public async Task AddCartToRequest()
     {
         //TODO: as we go thorugh the list, add items to list so we can aceess it later for the email
         //make a new DBContext
@@ -250,11 +250,11 @@ else
         //add each item
         foreach (var item in items)
         {
-            await AddCartToRequestItemAsync(item, requestId);
+            await AddCartToRequestItem(item, requestId);
         }
     }
 
-    public async Task AddCartToRequestItemAsync(CartItem item, int requestID)
+    public async Task AddCartToRequestItem(CartItem item, int requestID)
     {
         //make a new DBContext
         var context = dbcontext.CreateDbContext();

@@ -102,7 +102,7 @@
             var GoogleUser = User.Identities.FirstOrDefault();
             if (GoogleUser.IsAuthenticated)
             {
-                userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
                     GoogleUser.FindFirst(ClaimTypes.Name).Value,
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
@@ -118,7 +118,7 @@
 
             if (userRoleService.IsAuthenticated)
             {
-                await AddToCartAsync(userId, kitId, quantity);
+                await AddToCart(userId, kitId, quantity);
                 SuccessMessage = "Succesfully added item to cart!";
                 ErrorMessage = null;
                 addedToCart = true;
@@ -143,7 +143,7 @@
         }
         return price;
     }
-    private async Task AddToCartAsync(int userid, int kitid, int Qty)
+    private async Task AddToCart(int userid, int kitid, int Qty)
     {
         //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
         var context = await dbcontext.CreateDbContextAsync();

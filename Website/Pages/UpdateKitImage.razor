@@ -62,7 +62,7 @@ else
 
         if (GoogleUser.IsAuthenticated)
         {
-            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+            userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
                 GoogleUser.FindFirst(ClaimTypes.Name).Value,
                 GoogleUser.FindFirst(ClaimTypes.Surname).Value
                 );
