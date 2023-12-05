@@ -18,14 +18,20 @@ namespace UnitTests
 
         public BlazorIntegrationTestContext()
         {
+            var backupFile = Directory.GetFiles("C:/Users/carlo/OneDrive/Escritorio/MythicalToyMachine/Website/dump-postgres.sql")
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(fi => fi.LastWriteTime)
+                .First();
+
             _dbContainer = new PostgreSqlBuilder()
                 .WithImage("postgres")
                 .WithPassword("Strong_password_123!")
+                .WithBindMount(backupFile.FullName, "/docker-entrypoint-initdb.d/init.sql")
                 .Build();
 
             Services.AddDbContextFactory<PostgresContext>(options => options.UseNpgsql(_dbContainer.GetConnectionString()));
-            Services.AddScoped<WeatherForecastService>();
         }
+
 
         public async Task InitializeAsync()
         {

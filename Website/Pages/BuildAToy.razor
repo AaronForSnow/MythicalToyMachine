@@ -46,7 +46,7 @@
                     </canvas>
             </div>
             <Div Class="option-buttons">
-                <button class="btn btn-success option-buttons" @onclick="() => AddKit() ">Save</button>
+                <button class="btn btn-success option-buttons" @onclick="() => AddKitAsync() ">Save</button>
                 <a href="/MyCreations" class="btn btn-secondary option-buttons">View my past creations</a>
             </Div>
 
@@ -185,7 +185,7 @@ else
         var GoogleUser = User.Identities.FirstOrDefault();
         if (GoogleUser.IsAuthenticated)
         {
-            userId = await userRoleService.LookUpUser(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
                 GoogleUser.FindFirst(ClaimTypes.Name).Value,
                 GoogleUser.FindFirst(ClaimTypes.Surname).Value
                 );
@@ -247,7 +247,7 @@ else
         UserAccessories.Remove(kItToRemove);
     }
 
-    private async Task AddKit()
+    private async Task AddKitAsync()
     {
         var context = await dbcontext.CreateDbContextAsync();
         int newKitID = context.Kits.Max(c => c.Id) + 1;
