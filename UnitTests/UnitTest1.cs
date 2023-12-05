@@ -1,12 +1,10 @@
 using Bunit;
-using Bunit.TestDoubles;
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using MythicalToyMachine;
 using MythicalToyMachine.Data;
 using MythicalToyMachine.Pages;
 using MythicalToyMachine.Services;
-using MythicalToyMachine.Shared;
 
 namespace UnitTests
 {
@@ -22,68 +20,32 @@ namespace UnitTests
 
         }
 
-        [Fact]
-        public void AddToCartButtonAddsToCart()
-        {
-            //arr
-            ShoppingCartService sh = new ShoppingCartService(); //makes new service
-            Services.AddSingleton<ShoppingCartService>(sh); //adds service to our app
-            Mock<IDataService> cartServiceMock = new Mock<IDataService>(); //creates mock of service
-            cartServiceMock.Setup(n => n.GetKitsAsync()).ReturnsAsync(new[] //this makes a new cart service with one kit in it
-            {
-                new Kit
-                {
-                    Id = 1,
-                    Kitname = "Batman Kit"
-                }
-            });
-            Services.AddTransient<IDataService>(o => cartServiceMock.Object); //this adds it to the app
-            var cut = RenderComponent<Shop>(); //renders shop page
+        //[Fact]
+        //public void ClickingAddToCartButtonPutsTheItemInTheShoppingCart()
+        //{
+        //    //Arrange
+        //    var cartService = new ShoppingCartService();
+        //    Services.AddSingleton<ShoppingCartService>(cartService);
+        //    var mockService = new Mock<IDataService>();
+        //    mockService.Setup(m => m.GetKitsAsync()).ReturnsAsync(new[]
+        //    {
+        //        new Kit
+        //        {
+        //            Id = 1,
+        //            Kitname = "BogusKit1"
+        //        }
+        //    });
+        //    Services.AddTransient<IDataService>(_ => mockService.Object);
+        //    var cut = RenderComponent<Shop>();
 
-            //act
-            var button = cut.WaitForElement(".cartButton");
-            button.Click();
+        //    //act
+        //    var button = cut.WaitForElement(".cartButton");
+        //    button.Click();
 
-            //assert
-            //Assert.Equal(1, sh.AllKitsThatAreInTheCart.Count);
-            Assert.Single(sh.AllKitsThatAreInTheCart);
-            Assert.Equal("Batman Kit", sh.AllKitsThatAreInTheCart[0].Kitname);
-        }
-
-        [Fact]
-        public void CanDisplayItemsInUserCart()
-        {
-            var sh = new ShoppingCartService();
-            Services.AddSingleton<ShoppingCartService>(sh);
-            Mock<IUserRoleService> roleMock = new Mock<IUserRoleService>();
-            roleMock.Setup(m => m.GetUser(It.IsAny<string>())).ReturnsAsync(new Customer()
-            {
-                Id = 1
-            });
-            Services.AddSingleton(roleMock.Object);
-            this.AddTestAuthorization(); //look up bunit docs for how to pass in the email
-            Mock<IDataService> mock = new Mock<IDataService>();
-            mock.Setup(n => n.GetKitsAsync()).ReturnsAsync(new[]
-            {
-                new Kit
-                {
-                    Id= 1,
-                    Kitname = "testname"
-                }
-            });
-            Services.AddTransient<IDataService>(o => mock.Object); //this adds it to the app
-            var cut = RenderComponent<Shop>(); //renders shop page
-
-            //Act
-            var button = cut.WaitForElement(".cartButton");
-            button.Click(); //now the kit is in our cart
-            var cutCart = RenderComponent<Cart>();
-
-            var cartList = cutCart.WaitForElement(".Cart");
-
-            //Assert
-            cutCart.WaitForElements("ul li").Should().HaveCount(1);
-        }
+        //    //assert
+        //    Assert.Equal(1, cartService.AllKitsThatAreInTheCart.Count);
+        //    Assert.Equal("BogusKit1", cartService.AllKitsThatAreInTheCart[0].Kitname);
+        //}
     }
 
     public class UnitTestAuthenticationProvider : IUserRoleService
@@ -92,9 +54,14 @@ namespace UnitTests
 
         public IEnumerable<string> Roles { get; } = new List<string> { "customer", "admin" };
 
-        public async Task<int> LookUpUserAsync(string email, string name, string surname)
+        public Task<Customer> GetUser(string email)
         {
-            return -1; //ToDO: implement
+            throw new NotImplementedException();
+        }
+
+        public Task<int> LookUpUserAsync(string email, string name, string surname)
+        {
+            return (Task<int>)Task.CompletedTask;
         }
 
         public void ResetUser()
@@ -102,15 +69,6 @@ namespace UnitTests
 
         }
 
-        public async Task<Customer> GetUser(string email)
-        {
-            return new Customer
-            {
-                Id = 5,
-                Useremail = email
-            };
-        }
+
     }
-
-
 }

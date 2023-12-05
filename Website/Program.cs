@@ -1,17 +1,9 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using MythicalToyMachine;
 using MythicalToyMachine.Data;
-using System.Net.Http;
 using Blazorise;
 using Blazorise.Bootstrap;
-
-
+using MythicalToyMachine.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +19,8 @@ builder.Services.AddDbContextFactory<PostgresContext>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddTransient<IDataService, PostgresDataService>();
+builder.Services.AddScoped<ShoppingCartService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthentication().AddGoogle(options =>
