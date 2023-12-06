@@ -1,4 +1,5 @@
 using Bunit;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MythicalToyMachine;
@@ -25,7 +26,19 @@ namespace UnitTests
         {
             //Arrange
             var cartService = new ShoppingCartService();
-            Services.AddSingleton<ShoppingCartService>(cartService);
+            Services.AddSingleton<IUserRoleService, UnitTestAuthenticationProvider>();
+            //Services.AddSingleton<ShoppingCartService>(cartService);
+            //Services.AddDbContextFactory<PostgresContext>();
+            //Services.AddHttpContextAccessor();
+            //Services.AddScoped<HttpContextAccessor>();
+            //Services.AddAuthentication().AddGoogle(options =>
+            //{
+            //    //var clientid = builder.Configuration["Google:ClientId"];
+            //    options.ClientId = builConfiguration["Google:ClientId"];
+            //    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+            //    //options.ClaimActions.MapJsonkey("urn:google:profile", "link");
+            //    //options.ClaimActions.MapJsonkey("urn:google:image", "picture");
+            //});
             var mockService = new Mock<IDataService>();
             mockService.Setup(m => m.GetKitsAsync()).ReturnsAsync(new[]
             {
