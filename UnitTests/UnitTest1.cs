@@ -1,13 +1,20 @@
+
 using Bunit;
+using Bunit.TestDoubles;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using MythicalToyMachine;
 using MythicalToyMachine.Data;
-using MythicalToyMachine.Pages;
 using MythicalToyMachine.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 
 namespace UnitTests;
+
 
 public class UnitTest1 : TestContext
 {
@@ -26,8 +33,8 @@ public class UnitTest1 : TestContext
     //{
     //    //Arrange
     //    var cartService = new ShoppingCartService();
+    //    Services.AddSingleton(cartService);
     //    Services.AddSingleton<IUserRoleService, UnitTestAuthenticationProvider>();
-    //    //Services.AddSingleton<ShoppingCartService>(cartService);
     //    //Services.AddDbContextFactory<PostgresContext>();
     //    //Services.AddHttpContextAccessor();
     //    //Services.AddScoped<HttpContextAccessor>();
@@ -64,7 +71,7 @@ public class UnitTest1 : TestContext
 
 public class UnitTestAuthenticationProvider : IUserRoleService
 {
-    public bool IsAuthenticated => true;
+    public bool IsAuthenticated => false;
 
     public IEnumerable<string> Roles { get; } = new List<string> { "customer", "admin" };
 
@@ -92,3 +99,27 @@ public class UnitTestAuthenticationProvider : IUserRoleService
         throw new NotImplementedException();
     }
 }
+
+
+
+public class UnitTests2
+{
+    [Fact]
+    public void UserNotAuthenticated_BuildAToyComponent_Test()
+    {
+        //Arrange
+        using var ctx = new TestContext();
+        ctx.Services.AddSingleton<IUserRoleService, UnitTestAuthenticationProvider>();
+        ctx.Services.AddDbContextFactory<PostgresContext>();
+        ctx.Services.AddHttpContextAccessor();
+        ctx.Services.AddScoped<HttpContextAccessor>();
+
+        //Act
+        var renderedComponent = ctx.RenderComponent<MythicalToyMachine.Pages.BuildAToy>();
+
+        //Assert
+        Assert.Contains(@"<message class=""validation-message"">You need to <a class=""btn btn-info"" href=""/identity/login"">log in</a> to create a kit</message>", renderedComponent.Markup);
+    }
+}
+
+

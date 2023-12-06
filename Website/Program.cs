@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MythicalToyMachine;
 using MythicalToyMachine.Data;
-using Blazorise;
-using Blazorise.Bootstrap;
+
 using MythicalToyMachine.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,13 +36,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();
 //builder.Services.AddScoped<IDbContextFactory>();
 
-builder.Services
-    .AddBlazorise(options =>
-    {
-        options.Immediate = true;
-
-    })
-    .AddBootstrapProviders();
 
 //hellow workd
 
