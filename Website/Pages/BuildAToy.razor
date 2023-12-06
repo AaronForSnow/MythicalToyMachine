@@ -10,6 +10,7 @@
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
+@inject NavigationManager navigationManager
 
 <PageTitle>BuildAToy</PageTitle>
 
@@ -166,8 +167,8 @@ else
     private Kit[] Creations { get; set; }
     string pencilColor;
 
-    
-    
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -180,26 +181,32 @@ else
         creatureid = "1";
 
 
+        try
+        {
 
-        User = _httpContextAccessor.HttpContext.User;
-        var GoogleUser = User.Identities.FirstOrDefault();
-        if (GoogleUser.IsAuthenticated)
+            User = _httpContextAccessor.HttpContext.User;
+            var GoogleUser = User.Identities.FirstOrDefault();
+            if (GoogleUser.IsAuthenticated)
+            {
+                userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
+                userName = GoogleUser.FindFirst(ClaimTypes.Name).Value;
+            }
+            if(userRoleService.IsAuthenticated)
+            {
+                Accessories = await context.Accessories.ToArrayAsync();
+                Creatures = await context.Creatures.ToArrayAsync();
+                creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
+                Creations = await context.Kits.Where(k => k.CreatorId == userId)
+                                              .Include(k => k.KitAccessories)
+                                              .ThenInclude(k => k.Acc)
+                                              .ToArrayAsync();
+            }
+        }catch (Exception e)
         {
-            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
-                GoogleUser.FindFirst(ClaimTypes.Name).Value,
-                GoogleUser.FindFirst(ClaimTypes.Surname).Value
-                );
-            userName = GoogleUser.FindFirst(ClaimTypes.Name).Value;
-        }
-        if(userRoleService.IsAuthenticated)
-        {
-            Accessories = await context.Accessories.ToArrayAsync();
-            Creatures = await context.Creatures.ToArrayAsync();
-            creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
-            Creations = await context.Kits.Where(k => k.CreatorId == userId)
-                                          .Include(k => k.KitAccessories)
-                                          .ThenInclude(k => k.Acc)
-                                          .ToArrayAsync();
+            navigationManager.NavigateTo("/");
         }
     }
 

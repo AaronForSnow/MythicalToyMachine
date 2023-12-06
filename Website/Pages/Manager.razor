@@ -10,6 +10,7 @@
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
+@inject NavigationManager navigationManager
 
 <h3>Manager</h3>
     @if(userRoleService.IsAuthenticated && role == "admin")
@@ -96,40 +97,49 @@
     private string? role { get; set; }
 
     protected override async Task OnInitializedAsync()
-    { 
-        AccesoryCounts = new List<(Accessory, int)>();
-        User = _httpContextAccessor.HttpContext.User;
-        var GoogleUser = User.Identities.FirstOrDefault();
-        if (GoogleUser.IsAuthenticated)
+    {
+        try
         {
-            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
-                GoogleUser.FindFirst(ClaimTypes.Name).Value,
-                GoogleUser.FindFirst(ClaimTypes.Surname).Value
-                );
-        }
-        if (userRoleService.IsAuthenticated)
-        {
-            var context = dbcontext.CreateDbContext();
-            var customer = await context.Customers.Where(c => c.Id == userId)
-                                          .Include(c => c.CustomerRole)
-                                          .FirstOrDefaultAsync();
-            role = customer.CustomerRole.RoleDescription;     
-        }
-        if (userRoleService.IsAuthenticated && role == "admin")
-        {
-            var context = dbcontext.CreateDbContext();
-            requests = await context.Requests.Include(r => r.RequestItems)
-                                                .ThenInclude(i => i.Kit)
-                                                    .ThenInclude(k => k.KitAccessories)
-                                             .Include(r => r.Customer)
-                                             .ToArrayAsync();
 
-            var accesories = await context.Accessories.ToListAsync();
-            foreach(var a in accesories)
+            userRoleService.ResetUser();
+            AccesoryCounts = new List<(Accessory, int)>();
+            User = _httpContextAccessor.HttpContext.User;
+            var GoogleUser = User.Identities.FirstOrDefault();
+            if (GoogleUser.IsAuthenticated)
             {
-                AccesoryCounts.Add((a, CalculateCounts(a.Id)));
+                userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
+                if (userRoleService.IsAuthenticated)
+                {
+                    var context = dbcontext.CreateDbContext();
+                    var customer = await context.Customers.Where(c => c.Id == userId)
+                                                  .Include(c => c.CustomerRole)
+                                                  .FirstOrDefaultAsync();
+                    role = customer.CustomerRole.RoleDescription;
+                }
+                if (userRoleService.IsAuthenticated && role == "admin")
+                {
+                    var context = dbcontext.CreateDbContext();
+                    requests = await context.Requests.Include(r => r.RequestItems)
+                                                        .ThenInclude(i => i.Kit)
+                                                            .ThenInclude(k => k.KitAccessories)
+                                                     .Include(r => r.Customer)
+                                                     .ToArrayAsync();
+
+                    var accesories = await context.Accessories.ToListAsync();
+                    foreach (var a in accesories)
+                    {
+                        AccesoryCounts.Add((a, CalculateCounts(a.Id)));
+                    }
+                    AccesoryCounts = AccesoryCounts.OrderBy(a => a.Item2).ToList();
+                }
             }
-            AccesoryCounts = AccesoryCounts.OrderBy(a => a.Item2).ToList();
+        }
+        catch(Exception e)
+        {
+            navigationManager.NavigateTo("/");
         }
     }
 

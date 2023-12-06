@@ -12,12 +12,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<PostgresContext>();
 
-
-
 //builder.Services.AddSingleton<UserRoleService>();
 //We need to add an IUserRoleService
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
-
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddTransient<IDataService, PostgresDataService>();
 builder.Services.AddScoped<ShoppingCartService>();

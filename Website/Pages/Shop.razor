@@ -84,7 +84,7 @@
         Kits = await context.Kits.Where(k => k.Shoulddisplay == true)
                             .Include(C => C.Creature)
                             .Include(k => k.Creator)
-                            .Include(k => k.KitAccessories)
+                           .Include(k => k.KitAccessories)
                             .ThenInclude(ka => ka.Acc)
                             .ToArrayAsync();
 
@@ -125,7 +125,8 @@
             if (userRoleService.IsAuthenticated)
             {
                 await AddToCart(userId, kitId, quantity);
-                SuccessMessage = "Succesfully added item to cart!";
+                string m = Kits.Where(k => k.Id == kitId).FirstOrDefault().Kitname;
+                SuccessMessage = $"Succesfully added {m} to cart!";
                 ErrorMessage = null;
                 addedToCart = true;
             }

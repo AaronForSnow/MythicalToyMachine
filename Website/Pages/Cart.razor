@@ -74,27 +74,33 @@ else
         TotalPrice = 0;
         User = _httpContextAccessor.HttpContext.User;
         var GoogleUser = User.Identities.FirstOrDefault();
-        if (GoogleUser.IsAuthenticated)
+        try
         {
-            userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
-                GoogleUser.FindFirst(ClaimTypes.Name).Value,
-                GoogleUser.FindFirst(ClaimTypes.Surname).Value
-                );
-        }
-        if(userRoleService.IsAuthenticated)
-        {
-            var context = dbcontext.CreateDbContext();
-            items = await context.CartItems.Where(i => i.CustomerId == userId)
-                                           .Include(k => k.Kit)                           
-                                           .ThenInclude(C => C.Creature)
-                                           .Include(k => k.Kit)
-                                           .ThenInclude(j => j.KitAccessories)
-                                           .ThenInclude(a => a.Acc)
-                                           .ToArrayAsync();
-            foreach (var item in items)
+
+            if (GoogleUser.IsAuthenticated)
             {
-                TotalPrice += CalculateTotalPrice(item.Quantity, item.Id);
+                userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
             }
+            if(userRoleService.IsAuthenticated)
+            {
+                var context = dbcontext.CreateDbContext();
+                items = await context.CartItems.Where(i => i.CustomerId == userId)
+                                               .Include(k => k.Kit)                           
+                                               .ThenInclude(C => C.Creature)
+                                               .Include(k => k.Kit)
+                                               .ThenInclude(j => j.KitAccessories)
+                                               .ThenInclude(a => a.Acc)
+                                               .ToArrayAsync();
+                foreach (var item in items)
+                {
+                    TotalPrice += CalculateTotalPrice(item.Quantity, item.Id);
+                }
+            }
+        }catch (Exception e){
+            navigationManager.NavigateTo("/");
         }
     }
     private decimal CalculateTotalPrice(int qty, int itemid) => qty * CalulatePrice(itemid);

@@ -11,6 +11,7 @@ public interface IUserRoleService
     public Task<int> LookUpUserAsync(string email, string name, string surname);
     public void ResetUser();
     public Task<Customer> GetUser(string email);
+    public PostgresContext GetPostgresContext();
 }
 
 public class UserRoleService : IUserRoleService
@@ -18,6 +19,7 @@ public class UserRoleService : IUserRoleService
     public UserRoleService(PostgresContext context)
     {
         this.context = context;
+        //this.context = new PostgresContext();
     }
     public bool IsAuthenticated { get; private set; }
 
@@ -26,6 +28,11 @@ public class UserRoleService : IUserRoleService
     private PostgresContext context;
 
     private List<string> roles = new();
+
+    public PostgresContext GetPostgresContext()
+    {
+        return context;
+    }
 
     public async Task<Customer> GetUser(string email)
     {
@@ -52,7 +59,6 @@ public class UserRoleService : IUserRoleService
     {
         if (email is not null)
         {
-            string? eCompare = email;
             var lCustomer = await context.Customers.FirstOrDefaultAsync(c => c.Useremail == email);
             
             

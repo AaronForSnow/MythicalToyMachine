@@ -68,6 +68,10 @@ namespace UnitTests
         {
 
         }
+        public PostgresContext GetPostgresContext()
+        {
+            throw new NotImplementedException();
+        }
 
 
     }

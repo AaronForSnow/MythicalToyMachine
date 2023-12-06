@@ -42,7 +42,7 @@
             </NavLink>
         </div>
     }
-    @if (userRoleService.IsAuthenticated && role != "admin")
+    @if (userRoleService.IsAuthenticated) @*  && role != "admin") *@
     {
         <div style="flex: 1" class="nav-item justify-content-end">
             <NavLink class="nav-link" href="cart">
@@ -94,14 +94,14 @@
                 GoogleUser.FindFirst(ClaimTypes.Name).Value,
                 GoogleUser.FindFirst(ClaimTypes.Surname).Value
                 );
-        }
-        if (userRoleService.IsAuthenticated)
-        {
-            var context = dbcontext.CreateDbContext();
-            var customer = await context.Customers.Where(c => c.Id == userId)
-                                          .Include(c => c.CustomerRole)
-                                          .FirstOrDefaultAsync();
-            role = customer.CustomerRole.RoleDescription;
+            if (userRoleService.IsAuthenticated)
+            {
+                var context = dbcontext.CreateDbContext(); // userRoleService.GetPostgresContext();
+                var customer = await context.Customers.Where(c => c.Id == userId)
+                                              .Include(c => c.CustomerRole)
+                                              .FirstOrDefaultAsync();
+                role = customer.CustomerRole.RoleDescription;
+            }
         }
     }
 }
