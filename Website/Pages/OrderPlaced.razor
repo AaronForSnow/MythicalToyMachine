@@ -1,11 +1,17 @@
 ﻿@page "/orderplaced"
 @inject NavigationManager navigationManager
-<h3>OrderPlaced</h3>
 
-
-<p>Your order has been placed! Please check your email for details.
-    <br/>
-    Please click <button class="button" @onclick="@(() => navigationManager.NavigateTo("/"))">here</button> to return to the home page.</p>
+<div id="video-container">
+    <video id="video-background" autoplay muted loop>
+        <source src="/Videos/ending.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="video-overlay">
+        <p id="main-title">Thank You For Your Order!</p>
+        <p id="sub-title"> Please Check Your Email For Details.</p>
+        <a href="../" class="apple-button">Return To Home</a>
+    </div>
+</div>
 
 
 @code {

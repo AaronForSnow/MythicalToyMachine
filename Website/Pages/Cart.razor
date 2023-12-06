@@ -20,13 +20,51 @@
 
 @if (userRoleService.IsAuthenticated)
 {
-    @if(items is null || items.Length == 0)
+    @if (items is null || items.Length == 0)
     {
         <div>Your Cart is currently empty!</div>
     }
     else
+
     {
-        @foreach(var item in items)
+        <div class="checkout-container">
+
+            <div class="product-column-cart">
+            @foreach (var item in items)
+            {
+                    <div class="product-card-cart">
+                        <img src="@item.Kit.ThumbnailPath" alt="Product 1">
+                        <div class="product-info-cart">
+                            <div class="product-title-cart">@item.Kit.Kitname</div>
+                            <div class="product-description-cart"></div>
+                            <div class="product-price-cart">$@CalulatePrice(item.Id)</div>
+                            <div class="quantity-cart">Quantity: @item.Quantity</div>
+                            <a @onclick="() => RemoveItem(item.Id)" class="btn btn-primary" style="background-color=#c91610">Remove</a>
+                        </div>
+                    </div>
+            }
+            </div>
+
+            <div class="total-column">
+                <h2>Total</h2>
+                <div>
+                    <span>Subtotal:</span>
+                    <span>$@TotalPrice</span>
+                </div>
+                <div>
+                    <span>Shipping:</span>
+                    <span>$5.00</span>
+                </div>
+                <hr>
+                <div>
+                    <span>Total:</span>
+                    <span>$@(TotalPrice + 5)</span>
+                </div>
+                <div @onclick=@Checkout style="background-color=#333" class="btn btn-success btn-lg btn-block">Proceed to payment</div>
+            </div>
+        </div>
+
+        @* @foreach(var item in items)
         {
             <div class="card" style="width: 18rem;">
                 <img class="card-img-top" src=@item.Kit.ThumbnailPath>
@@ -46,14 +84,17 @@
                 </div>
             </div>
 
-        
+
         }   
         <div>Cart Total: $@TotalPrice</div>
+        }
+
+        <Button @onclick=@Checkout>Checkout</Button> 
+        }*@
+
+        @*  <Alert>@Message</Alert> *@
     }
 
-    <Button @onclick=@Checkout>Checkout</Button>
-
-   @*  <Alert>@Message</Alert> *@
 }
 else
 {

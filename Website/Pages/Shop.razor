@@ -19,12 +19,42 @@
 
 <h3>Shop</h3>
 
-   @*  get the info for each product from the db *@
+@if(SuccessMessage is not null)
+{
+    <br />
+    <div class="alert alert-success">@SuccessMessage</div>        
+}
+
+@if (ErrorMessage is not null)
+{
+    <br />
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
 
 @if(Kits is not null)
     {
-        <div class="Products d-flex flex-row">    
-        @foreach (var k in Kits)
+        <div class="product-box">
+            @foreach (var k in Kits)
+            {
+            <div class="product-card">
+                <img src="@k.ThumbnailPath" alt="Product 1">
+                <div class="product-info">
+                    <div class="product-title">@k.Kitname</div>
+                    <div class="product-price">$@CalculateTotalPrice(KitQties[k.Id], k.Id)</div>
+                    <div class="accessories">Includes accessories: @AccesoriesToString(k)</div>
+
+                    <div style="display: flex; align-items: center; margin-top: 10px;">
+                        <label for="quantity" style="margin-right: 10px;">Quantity:</label>
+                        <input type="number" class="quantity-input" @bind="KitQties[k.Id]" id="quantity" name="quantity" min="1" max="20">
+                    </div>
+
+
+                    <button class="add-to-cart" @onclick="async () => await AttemptAddToCart(k.Id, KitQties[k.Id])">Add to Cart</button>
+                </div>
+            </div>
+            }
+        </div>
+        @* @foreach (var k in Kits)
             {
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src=@k.ThumbnailPath>
@@ -48,20 +78,8 @@
 
                     </div>
                 </div>
-            }
-        </div>
+            } *@
 
-        @if(SuccessMessage is not null)
-        {
-            <br />
-            <div class="alert alert-success">@SuccessMessage</div>        
-        }
-
-        @if (ErrorMessage is not null)
-        {
-            <br />
-            <div class="alert alert-danger">@ErrorMessage</div>
-        }
     }
     else
     {
@@ -199,7 +217,26 @@
         }
         await context.SaveChangesAsync();
     }
-    
+
+    public string AccesoriesToString(Kit kit)
+    {
+        List<KitAccessory> kitList = kit.KitAccessories.ToList();
+        string accesoryList = "";
+        for (int i = 0; i < kitList.Count; i++)
+        {
+            if (i == kitList.Count - 1)
+            {
+                accesoryList += kitList[i].Acc.Accessoryname;
+            }
+            else
+            {
+                accesoryList += $"{kitList[i].Acc.Accessoryname}, ";
+            }
+        }
+
+        return accesoryList;
+    }
+
 
     //add to card button adds to card
 
