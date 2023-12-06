@@ -18,9 +18,57 @@
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
 
+<nav class="navbar navbar-expand-md navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><img src="/images/logo.png" alt="Your Company Logo" height="30" /></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="../shop"><i class=""></i>Shop</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../MyCreations"><i class=""></i>Creations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../cart"><span class="oi oi-cart"></span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../"><i class="oi oi-home"></i></a>
+                </li>
+                @if (userRoleService.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/identity/logout"><i class="oi oi-account-logout"></i></a>
+                    </li>
+                }
+                else
+                {                  
+                    <li class="nav-item">
+                        <a class="nav-link" href="/identity/login"><i class="oi oi-person"></i></a>
+                    </li>
+                }
+                @if (userRoleService.IsAuthenticated && role == "admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager"><i class="oi oi-people"></i></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/imageUpload"><i class="oi oi-image"></i></a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
 
 
-<div style="display: flex;">
+
+@* <div style="display: flex;">
     <div style="flex: 1" class="nav-item">
         <NavLink class="nav-link" href="">
             <span class="oi oi-home" aria-hidden="true"></span> Home
@@ -42,7 +90,7 @@
             </NavLink>
         </div>
     }
-    @if (userRoleService.IsAuthenticated) @*  && role != "admin") *@
+    @if (userRoleService.IsAuthenticated) @*  && role != "admin") 
     {
         <div style="flex: 1" class="nav-item justify-content-end">
             <NavLink class="nav-link" href="cart">
@@ -67,7 +115,7 @@
     }
 
 </div>
-
+ *@
 
 
 @code {
