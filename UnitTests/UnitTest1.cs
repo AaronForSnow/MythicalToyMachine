@@ -71,7 +71,7 @@ public class UnitTest1 : TestContext
 
 
 
-public class AuthenticationTests2
+public class AuthenticationUnitTests
 {
     [Fact]
     public void UserNotAuthenticated_BuildAToyComponent_Test()
