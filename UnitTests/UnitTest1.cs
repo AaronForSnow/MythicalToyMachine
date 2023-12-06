@@ -71,7 +71,7 @@ public class UnitTest1 : TestContext
 
 public class UnitTestAuthenticationProvider : IUserRoleService
 {
-    public bool IsAuthenticated => false;
+    public bool IsAuthenticated { get; set; }
 
     public IEnumerable<string> Roles { get; } = new List<string> { "customer", "admin" };
 
@@ -102,7 +102,7 @@ public class UnitTestAuthenticationProvider : IUserRoleService
 
 
 
-public class UnitTests2
+public class AuthenticationTests2
 {
     [Fact]
     public void UserNotAuthenticated_BuildAToyComponent_Test()
@@ -120,6 +120,71 @@ public class UnitTests2
         //Assert
         Assert.Contains(@"<message class=""validation-message"">You need to <a class=""btn btn-info"" href=""/identity/login"">log in</a> to create a kit</message>", renderedComponent.Markup);
     }
+
+    //[Fact]
+    //public void UserAuthenticated_BuildAToyComponent_Test()
+    //{
+    //    //Arrange
+    //    using var ctx = new TestContext();
+    //    ctx.Services.AddSingleton<IUserRoleService, UnitTestAuthenticationProvider>();
+    //    ctx.Services.AddDbContextFactory<PostgresContext>();
+    //    ctx.Services.AddHttpContextAccessor();
+    //    ctx.Services.AddScoped<HttpContextAccessor>();
+
+
+    //    var authContext = new UnitTestAuthenticationProvider();
+    //    authContext.IsAuthenticated = true;
+        
+
+    //    //Act
+    //    var renderedComponent = ctx.RenderComponent<MythicalToyMachine.Pages.BuildAToy>();
+
+    //    //Assert
+    //    Assert.Contains(@"<body>
+    //<div id=""flex-container"">
+    //    <div id=""accessory-column"" Class=""flex-column"">
+    //        <div  Class=""accessory-img img-fluid"" id=""unicornhorn"">
+    //            <img class=""img-fluid"" src=""/Images/Accessories/unicornhorn.png"">
+    //        </div>
+    //        <div Class=""accessory-img img-fluid"" id=""antlers"">
+    //            <img class=""img-fluid"" src=""/Images/Accessories/antlers.png"">
+    //        </div>
+    //        <div Class=""accessory-img img-fluid"" id=""wing"">
+    //            <img class=""img-fluid"" src=""/Images/Accessories/wing.png"">
+    //        </div>
+    //        <div Class=""accessory-img img-fluid"" id=""wing-evil"">
+    //            <img class=""img-fluid"" src=""/Images/Accessories/wing-evil.png"">
+    //        </div>
+    //        <div Class=""accessory-img img-fluid"" id=""js"">
+    //            <img class=""img-fluid"" src=""/Images/Accessories/js.png"">
+    //        </div>
+    //    </div>
+    //    <div id=""center-column"" class=""flex-column"">
+    //        <div id=""page-subtitle img-fluid"">
+    //            <img style=""user-select: none;"" src=""/Images/Accessories/subtitle.png"">
+    //        </div>
+    //        <div id=""dragContainer"" class=""dino-img"">
+    //                <canvas id=""dinoCanvas"" width=""600"" height=""300"">
+    //                </canvas>
+    //        </div>
+    //        <div class=""option-buttons"">
+    //            <button class=""btn btn-success option-buttons"" @onclick=""() => AddKitAsync() "">Save</button>
+    //            <a href=""/MyCreations"" class=""btn btn-secondary option-buttons"">View my past creations</a>
+    //        </div>
+    //    </div>
+    //    <div id=""colors-column"" class=""flex-column"">
+    //        <div class=""red rounded-circle color-selection""></div>
+    //        <div class=""orange rounded-circle color-selection""></div>
+    //        <div class=""yellow rounded-circle color-selection""></div>
+    //        <div class=""green rounded-circle color-selection""></div>
+    //        <div class=""blue rounded-circle color-selection""></div>
+    //        <div class=""purple rounded-circle color-selection""></div>
+    //        <img id=""eraser"" draggable=""false"" src=""/Images/Accessories/eraser.png"">
+    //    </div>
+    //</div>
+    //    <script src=""js/drawingscript.js"" type=""module""></script>
+    //</body>", renderedComponent.Markup);
+    //}
 }
 
 

@@ -50,7 +50,7 @@ namespace MythicalToyMachine.Pages.Identity
                 new ClaimsPrincipal(GoogleUser),
                 authProperties);
             }
-            return LocalRedirect("/");
+            return LocalRedirect("/"); //TODO: Find a way to send you back to the page you were on instead of index every time
         }
     }
 }

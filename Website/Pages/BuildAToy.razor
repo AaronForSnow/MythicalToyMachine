@@ -64,10 +64,11 @@
         </div>
 
     </div>
-
-
     
-    
+        <script src="js/drawingscript.js" type="module"></script>
+
+    </body>
+
 
     @*
     <img class="img-fluid" src="/Images/Accessories/dino.png">
@@ -139,9 +140,7 @@
     }
     </div> *@
 
-        <script src="js/drawingscript.js" type="module"></script>
-
-    </body>
+        
     
 }
 else
@@ -182,28 +181,26 @@ else
 
         try
         {
-            if (_httpContextAccessor.HttpContext.User is not null)
+            User = _httpContextAccessor.HttpContext.User;
+            var GoogleUser = User.Identities.FirstOrDefault();
+            if (GoogleUser.IsAuthenticated)
             {
-                User = _httpContextAccessor.HttpContext.User;
-                var GoogleUser = User.Identities.FirstOrDefault();
-                if (GoogleUser.IsAuthenticated)
-                {
-                    userId = await userRoleService.LookUpUserAsync(GoogleUser.FindFirst(ClaimTypes.Email).Value,
-                        GoogleUser.FindFirst(ClaimTypes.Name).Value,
-                        GoogleUser.FindFirst(ClaimTypes.Surname).Value
-                        );
-                    userName = GoogleUser.FindFirst(ClaimTypes.Name).Value;
-                }
-                if (userRoleService.IsAuthenticated)
-                {
-                    Accessories = await context.Accessories.ToArrayAsync();
-                    Creatures = await context.Creatures.ToArrayAsync();
-                    creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
-                    Creations = await context.Kits.Where(k => k.CreatorId == userId)
-                                                  .Include(k => k.KitAccessories)
-                                                  .ThenInclude(k => k.Acc)
-                                                  .ToArrayAsync();
-                }
+                userId = await userRoleService.LookUpUserAsync(
+                    GoogleUser.FindFirst(ClaimTypes.Email).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Name).Value,
+                    GoogleUser.FindFirst(ClaimTypes.Surname).Value
+                    );
+                userName = GoogleUser.FindFirst(ClaimTypes.Name).Value;
+            }
+            if (userRoleService.IsAuthenticated)
+            {
+                Accessories = await context.Accessories.ToArrayAsync();
+                Creatures = await context.Creatures.ToArrayAsync();
+                creature = await context.Creatures.Where(c => c.Id == 1).FirstOrDefaultAsync();
+                Creations = await context.Kits.Where(k => k.CreatorId == userId)
+                                                .Include(k => k.KitAccessories)
+                                                .ThenInclude(k => k.Acc)
+                                                .ToArrayAsync();
             }
         }
         catch (Exception e)
