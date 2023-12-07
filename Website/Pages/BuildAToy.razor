@@ -19,21 +19,21 @@
 
     <div id="flex-container">
         <div id="accessory-column" Class="flex-column">
-            <div  Class="accessory-img img-fluid" id="unicornhorn">
-                <img class="img-fluid" src="/Images/Accessories/unicornhorn.png">
+            <div Class="accessory-img img-fluid" id="horn">
+                    <img class="img-fluid" src="/Images/Accessories/horn.png" @onmousedown="() => AddAccessory(1)">
             </div>
-            <div Class="accessory-img img-fluid" id="antlers">
+                <div Class="accessory-img img-fluid" id="antlers" @onmousedown="() => AddAccessory(5)">
                 <img class="img-fluid" src="/Images/Accessories/antlers.png">
             </div>
-            <div Class="accessory-img img-fluid" id="wing">
+                <div Class="accessory-img img-fluid" id="wing" @onmousedown="() => AddAccessory(3)">
                 <img class="img-fluid" src="/Images/Accessories/wing.png">
             </div>
-            <div Class="accessory-img img-fluid" id="wing-evil">
-                <img class="img-fluid" src="/Images/Accessories/wing-evil.png">
+                <div Class="accessory-img img-fluid" id="batwings" @onmousedown="() => AddAccessory(6)">
+                <img class="img-fluid" src="/Images/Accessories/batwings.png">
             </div>
-            <div Class="accessory-img img-fluid" id="js">
-                <img class="img-fluid" src="/Images/Accessories/js.png">
-            </div>
+                <div Class="accessory-img img-fluid" id="shoe" @onmousedown="() => AddAccessory(4)">
+                <img class="img-fluid" src="/Images/Accessories/shoe.png">
+            </div> 
         </div>
 
         <div id="center-column" class="flex-column">
@@ -46,9 +46,19 @@
                     </canvas>
             </div>
             <div class="option-buttons">
-                <button class="btn btn-success option-buttons" @onclick="() => AddKitAsync() ">Save</button>
-                <a href="/MyCreations" class="btn btn-secondary option-buttons">View my past creations</a>
+                @if(creationSaved)
+                {
+                        <button class="btn btn-success option-buttons" @onclick="() => AddKitAsync() ">Saved!</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-dark option-buttons" @onclick="() => AddKitAsync() ">Save</button>
+
+                    }
+                <a href="/MyCreations" class="btn btn-secondary option-buttons">My Creations</a>
+
             </div>
+           
 
         </div>
 
@@ -61,7 +71,8 @@
                 <div class="purple rounded-circle color-selection" data-color="purple"></div>
                 <img id="eraser" draggable="false" src="/Images/Accessories/eraser.png">
             </div>
-
+            
+           
 
     </div>
     
@@ -69,50 +80,10 @@
 
 
 
+    
+
+
     @*
-    <img class="img-fluid" src="/Images/Accessories/dino.png">
-
-    var x = 0;
-    var y = 0;
-    var isDrawing = false;
-    const cnv = document.getElementById('canvas');
-    const ctx = cnv.getContext('2d');
-
-    cnv.addEventListener("mousedown", (e) => {
-    x = e.offsetX;
-    y = e.offsetY;
-    isDrawing = true
-    });
-
-    cnv.addEventListener("mousemove", (e) => {
-    if (isDrawing === true) {
-    drawLine(x, y, e.offsetX, e.offsetY);
-    x = e.offsetX;
-    y = e.offsetY;
-    }
-    });
-
-    cnv.addEventListener("mouseup", (e) => {
-    if (isDrawing === true) {
-    drawLine(x, y, e.offsetX, e.offsetY);
-    x = 0;
-    y = 0;
-    isDrawing = false;
-    }
-    });
-
-    function drawLine(x1, y1, x2, y2) {
-    ctx.beginPath();
-    ctx.strokeStyle = @pencilColor;
-    ctx.lineWidth = 10;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.closePath();
-    }
-
-
-
     
     <label for="kitCreature">Choose a Creature: </label>
 
@@ -160,6 +131,11 @@ else
     private Kit[] Creations { get; set; }
     string pencilColor;
 
+    string imgFilePath = "/Images/Accessories/";
+    string dotPng = ".png";
+
+    private bool creationSaved;
+
 
 
 
@@ -203,7 +179,7 @@ else
         }
     }
 
-    private void AddAccessory (int kitID)
+    private void AddAccessory(int kitID)
     {
         bool added = false;
         foreach(var ka in UserAccessories)
@@ -225,6 +201,7 @@ else
                         Acc = Accessories.Where(a => a.Id == kitID).FirstOrDefault()
                      }
             );
+
         }
     }
 
@@ -276,6 +253,7 @@ else
             await context.KitAccessories.AddAsync(toAdd);
         }
         await context.SaveChangesAsync();
+        creationSaved = true;
     }
 
 }
