@@ -67,8 +67,23 @@ function drawLine(x1, y1, x2, y2) {
     ctx.closePath();
 }
 
+
 const selectedColor = document.querySelectorAll('.color-selection');
 console.log('colorselects', selectedColor);
+
+selectedColor.forEach(function (colorDiv) {
+    colorDiv.addEventListener('click', function () {
+        color = colorDiv.dataset.color;
+        console.log('Selected color:', color);
+    });
+
+    colorDiv.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        color = colorDiv.dataset.color;
+        console.log('Selected color:', color);
+    });
+});
+
 
 
 
