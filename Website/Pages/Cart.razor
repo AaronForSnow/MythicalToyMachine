@@ -98,7 +98,17 @@
 }
 else
 {
-    <a>You are not logged in. Log in to see your cart.</a>
+    <div id="video-container">
+        <video id="video-background" autoplay muted loop>
+            <source src="/Videos/NotLoggedIn.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div id="video-overlay">
+            <p id="main-title">Sorry You're Not Logged In!</p>
+            <p id="sub-title"> Log In To Access This Content</p>
+            <a href="/identity/login" class="apple-button">Log In</a>
+        </div>
+    </div>
 }
 
 

@@ -12,11 +12,10 @@
 @inject IUserRoleService userRoleService
 @inject NavigationManager navigationManager
 
-<PageTitle>BuildAToy</PageTitle>
+<h3>Character Creator</h3>
 
 @if (userRoleService.IsAuthenticated)
 {
-    <body>
 
     <div id="flex-container">
         <div id="accessory-column" Class="flex-column">
@@ -68,7 +67,6 @@
     
         <script src="js/drawingscript.js" type="module"></script>
 
-    </body>
 
 
     @*
@@ -148,11 +146,6 @@ else
 {
     <message class="validation-message">You need to <a class="btn btn-info" href="/identity/login">log in</a> to create a kit</message>
 }
-
-
-
-
-
 
 
 @code {
