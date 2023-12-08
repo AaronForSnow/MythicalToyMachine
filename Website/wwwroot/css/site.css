@@ -180,6 +180,12 @@ canvas{
         .purple {
             background-color: violet;
         }
+        .brown {
+            background-color: brown;
+        }
+        .black {
+            background-color: black;
+        }
         #eraser{
             width:200px;
         }
