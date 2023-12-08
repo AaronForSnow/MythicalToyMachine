@@ -202,7 +202,6 @@ else
             string message = await GetEmailDetails();
             await SendEmail(email, subject, message);
             //TODO: Erase the cart for that customer
-            //TODO: redirect user to "Order placed" page.
             navigationManager.NavigateTo("/orderplaced");
         }
     }

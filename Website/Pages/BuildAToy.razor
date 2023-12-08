@@ -12,10 +12,12 @@
 @inject IUserRoleService userRoleService
 @inject NavigationManager navigationManager
 
+
 <h3>Character Creator</h3>
 
 @if (userRoleService.IsAuthenticated)
 {
+<body style=" height: 100vh; margin: 0; overflow: hidden;">
 
     <div id="flex-container">
         <div id="accessory-column" Class="flex-column">
@@ -83,6 +85,7 @@
 
 
     
+</body>
 
 
     @*
