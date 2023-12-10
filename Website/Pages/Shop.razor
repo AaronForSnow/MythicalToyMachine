@@ -9,6 +9,7 @@
 @using MythicalToyMachine.Services;
 @using MythicalToyMachine.Data;
 @using Microsoft.EntityFrameworkCore;
+@using MythicalToyMachine.Logic;
 @inject IHttpContextAccessor _httpContextAccessor
 @inject HttpClient Http
 @inject IDbContextFactory<PostgresContext> dbcontext
@@ -41,7 +42,7 @@
                 <div class="product-info">
                     <div class="product-title">@k.Kitname</div>
                     <div class="product-price">$@CalculateTotalPrice(KitQties[k.Id], k.Id)</div>
-                    <div class="accessories">Includes accessories: @AccesoriesToString(k)</div>
+                    <div class="accessories">Includes accessories: @shopLogic.AccesoriesToString(k)</div>
 
                     <div style="display: flex; align-items: center; margin-top: 10px;">
                         <label for="quantity" style="margin-right: 10px;">Quantity:</label>
@@ -95,6 +96,7 @@
     Dictionary<int, int> KitQties = new();
     CartItem[] CartItemsForId { get; set; }
     int userId;
+    ShopLogic shopLogic = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,6 +114,8 @@
         {
             KitQties[kit.Id] = 1;
         }
+
+        
 
     }
 
@@ -168,6 +172,7 @@
         }
         return price;
     }
+
     private async Task AddToCart(int userid, int kitid, int Qty)
     {
         //TODO: if not logged in we need to let the user know they need to log in or heck just redirect them to the login page
@@ -218,27 +223,5 @@
         await context.SaveChangesAsync();
     }
 
-    public string AccesoriesToString(Kit kit)
-    {
-        List<KitAccessory> kitList = kit.KitAccessories.ToList();
-        string accesoryList = "";
-        for (int i = 0; i < kitList.Count; i++)
-        {
-            if (i == kitList.Count - 1)
-            {
-                accesoryList += kitList[i].Acc.Accessoryname;
-            }
-            else
-            {
-                accesoryList += $"{kitList[i].Acc.Accessoryname}, ";
-            }
-        }
-
-        return accesoryList;
-    }
-
-
-    //add to card button adds to card
-
-
+   
 }

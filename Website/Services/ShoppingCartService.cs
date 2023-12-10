@@ -3,7 +3,7 @@ using MythicalToyMachine.Data;
 
 namespace MythicalToyMachine.Services;
 
-public class ShoppingCartService
+public class ShoppingCartService : IShoppingCartService
 {
     public List<Kit> AllKitsThatAreInTheCart { get; } = new();
 
