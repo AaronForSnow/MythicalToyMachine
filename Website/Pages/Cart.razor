@@ -200,7 +200,8 @@ else
             string email = User.FindFirstValue(ClaimTypes.Email);
             string subject = "New Order From Tailored Toys";
             string message = await GetEmailDetails();
-            await SendEmail(email, subject, message);
+            await SendEmail(email, subject, message); //sends email to cx
+            await SendEmail("tailoredtoys47@gmail.com", subject, message); //sends email to store owner
             //TODO: Erase the cart for that customer
             navigationManager.NavigateTo("/orderplaced");
         }
