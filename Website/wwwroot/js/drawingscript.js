@@ -20,7 +20,6 @@ var img = new Image();
 img.src = 'Images/Accessories/dino.png';
 
 
-//window.addEventListener("resize", resizeCanvas); //THIS CONTROLS THE CHANGING OF THE CANVAS WHEN YOU DO DIFFERENT SIZES
 
 function resizeCanvas(e) {
     console.log("changing canvas. Old width:", cnv.width);
