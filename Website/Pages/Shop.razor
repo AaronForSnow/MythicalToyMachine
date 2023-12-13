@@ -16,6 +16,8 @@
 @inject IUserRoleService userRoleService
 @inject ShoppingCartService cart
 @inject IDataService dataService
+@inject ILogger<Shop> Logger
+
 
 
 <h3>Shop</h3>
@@ -23,13 +25,17 @@
 @if(SuccessMessage is not null)
 {
     <br />
-    <div class="alert alert-success">@SuccessMessage</div>        
+    <div class="alert alert-success">@SuccessMessage</div>     
+    Logger.LogInformation("Succesfully added item from shop");
+
 }
 
 @if (ErrorMessage is not null)
 {
     <br />
     <div class="alert alert-danger">@ErrorMessage</div>
+    Logger.LogWarning("User tried to add to cart but didn't sign in'");
+
 }
 
 @if(Kits is not null)
@@ -135,6 +141,7 @@
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
 
+                Logger.LogDebug($"Retrieved id {userId} in Shop");
             }
             else
             {
@@ -155,7 +162,7 @@
         }
         catch (Exception e)
         {
-
+            Logger.LogError(e, "Error In Shop Page");
         }
     }
     private decimal CalulatePrice(int kitid)

@@ -11,10 +11,12 @@
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
 @inject NavigationManager navigationManager
+@inject ILogger<Manager> Logger
 
 <h3>Manager</h3>
     @if(userRoleService.IsAuthenticated && role == "admin")
     {
+        Logger.LogInformation("Manager succesfully signed in");
         <table class="table">
               <thead class="thead-dark">
                 <tr><th colspan="6">Requests</th></tr>
@@ -86,6 +88,7 @@
     }
     else
     {
+    Logger.LogWarning("Unauthorized User tried to log in");
     <div id="video-container">
         <div id="video-overlay">
             <p id="main-title">You're not Authorized to see This Content!</p>
@@ -115,6 +118,9 @@
                     GoogleUser.FindFirst(ClaimTypes.Name).Value,
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
+
+                Logger.LogDebug($"Retrieved id {userId} in Manager page");
+
                 if (userRoleService.IsAuthenticated)
                 {
                     var context = dbcontext.CreateDbContext();
@@ -143,6 +149,7 @@
         }
         catch(Exception e)
         {
+            Logger.LogError(e, "Error In Manager Page");
             navigationManager.NavigateTo("/");
         }
     }

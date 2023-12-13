@@ -1,3 +1,4 @@
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MythicalToyMachine;
 using MythicalToyMachine.Data;
@@ -35,7 +36,7 @@ builder.Services.AddScoped<HttpContextAccessor>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();
 //builder.Services.AddScoped<IDbContextFactory>();
-
+builder.Services.AddLogging();
 
 //hellow workd
 

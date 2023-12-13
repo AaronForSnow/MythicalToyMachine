@@ -15,11 +15,14 @@
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
 @inject NavigationManager navigationManager
+@inject ILogger<Cart> Logger
+
 
 <h3>Cart</h3>
 
 @if (userRoleService.IsAuthenticated)
 {
+    Logger.LogInformation("Succesfully authenticated user");
     @if (items is null || items.Length == 0)
     {
         <div>Your Cart is currently empty!</div>
@@ -98,6 +101,7 @@
 }
 else
 {
+    Logger.LogWarning("User didn't log in Cart");
     <div id="video-container">
         <div id="video-overlay">
             <p id="main-title">Sorry You're Not Logged In!</p>
@@ -130,6 +134,9 @@ else
                     GoogleUser.FindFirst(ClaimTypes.Name).Value,
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
+
+                Logger.LogDebug($"Retrieved id {userId} in Cart");
+
             }
             if(userRoleService.IsAuthenticated)
             {
@@ -147,6 +154,7 @@ else
                 }
             }
         }catch (Exception e){
+            Logger.LogError(e, "Error In Cart Page");
             navigationManager.NavigateTo("/");
         }
     }

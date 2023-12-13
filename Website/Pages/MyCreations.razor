@@ -11,11 +11,14 @@
 @inject IDbContextFactory<PostgresContext> dbcontext
 @inject IUserRoleService userRoleService
 @inject NavigationManager navigationManager
+@inject ILogger<MyCreations> Logger
 
 <h3>MyCreations</h3>
 
 @if (userRoleService.IsAuthenticated)
 {
+    Logger.LogInformation("Succesfully authenticated user");
+
     @if (Creations.Length == 0 || Creations is null)//their list of creations is empty
     {
         <a>You don't have any saved creations</a>
@@ -92,6 +95,7 @@
 
 else
 {
+    Logger.LogWarning("User didn't log in Creations");
     <div id="video-container">
         <div id="video-overlay">
             <p id="main-title">Sorry You're Not Logged In!</p>
@@ -125,6 +129,9 @@ else
                     GoogleUser.FindFirst(ClaimTypes.Name).Value,
                     GoogleUser.FindFirst(ClaimTypes.Surname).Value
                     );
+
+                Logger.LogDebug($"Retrieved id {userId} in Creations");
+
                 if (userRoleService.IsAuthenticated)
                 {
                     var context = dbcontext.CreateDbContext();
@@ -143,6 +150,7 @@ else
 
         } catch (Exception e)
         {
+            Logger.LogError(e, "Error In Creations Page");
             navigationManager.NavigateTo("/");
         }
 
